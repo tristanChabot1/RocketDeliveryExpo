@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
@@ -9,6 +10,18 @@ export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [show, setShow] = useState(false);
+
+  useFocusEffect(
+    React.useCallback(() => {
+    const checkLoginState = async () => {
+    const isLoggedIn = await AsyncStorage.getItem('isLoggedIn');
+    if (isLoggedIn) {
+    navigation.replace('Restaurant');
+    }
+    };
+    checkLoginState();
+    }, [])
+  );
     
   const handleLogin = async () => {
     try {
@@ -21,7 +34,8 @@ export default function LoginScreen({ navigation }) {
   
       if (response.data.success) {
         setShow(false);
-        navigation.navigate('Home');
+        await AsyncStorage.setItem('isLoggedIn', 'true');
+        navigation.navigate('Restaurant');
       } else {
         setShow(true);
       }
@@ -65,11 +79,6 @@ export default function LoginScreen({ navigation }) {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    width: "100%",
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   scrollViewContent: {
     width: "100%",
     justifyContent: 'center',
@@ -80,7 +89,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: "5%",
     width: "80%",
-    backgroundColor: "white"
+    backgroundColor: "white",
+    borderRadius: 5,
+    borderWidth: 2,
+    borderColor: '#222126',
   },
   welcome:{
     alignSelf: "flex-start",
