@@ -1,51 +1,62 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity, Modal, Button, Dimensions } from 'react-native';
 import axios from 'axios';
 import Header from '../components/Header';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
+import { faCirclePlus } from '@fortawesome/free-solid-svg-icons/faCirclePlus'
+import { faCircleMinus } from '@fortawesome/free-solid-svg-icons/faCircleMinus'
 
 export default function MenuScreen({ navigation, route }) {
   const { restaurant } = route.params;
+  const [isDisabled, setIsDisabled] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [products, setProducts] = useState(
+    restaurant.products.map(product => ({
+      ...product,
+      quantity: 0,
+    }))
+  );
+
+  const { height } = Dimensions.get('window');
+  const modalTopMeasure = height/2 - 100
 
 
-  // useEffect(() => {
-  //   const getRestaurants = async () => {
-  //     try {
-  //       const response = await axios.get('https://1fdb-142-182-79-148.ngrok-free.app/restaurants');
-  //       if (response.status === 200) {
-  //         const restaurants = response.data.map(({ id, address_id, active, email, name, phone, price_range, user_id, rating_average }, index) => {
-  //           return {
-  //             id,
-  //             address_id,
-  //             active,
-  //             email,
-  //             name,
-  //             phone,
-  //             price_range,
-  //             user_id,
-  //             rating_average,
-  //           };
-  //         });
-  //         setRestaurants(restaurants);
-  //       } else {
-  //         // manage case
-  //       }
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  
-  //   getRestaurants();
-  // }, []);
+  useEffect(() => {
+    let flag = true;
+    products.forEach(product => {
+      if (product.quantity > 0) {
+        flag = false;
+      }
+    });
+    setIsDisabled(flag);
+  }, [products]);
+
 
   const handlePress = () => {
     navigation.replace('Restaurant');
   };
 
-  const createOrder = () => {
+  const toggleModal = () => {
+    setModalVisible(!modalVisible);
+  };
 
-  }
-
-  const calculatedHeight = `${(872 / 887) * 0.3}%`;
+  const removeItem = (index) => {
+    if (products[index].quantity > 0) {
+      setProducts(prevProducts => {
+        const newProducts = [...prevProducts];
+        newProducts[index] = { ...newProducts[index], quantity: newProducts[index].quantity - 1 };
+        return newProducts;
+      });
+    }
+  };
+  
+  const addItem = (index) => {
+    setProducts(prevProducts => {
+      const newProducts = [...prevProducts];
+      newProducts[index] = { ...newProducts[index], quantity: newProducts[index].quantity + 1 };
+      return newProducts;
+    });
+  };
 
 
   return (
@@ -64,13 +75,19 @@ export default function MenuScreen({ navigation, route }) {
             <Text>{`Rating: ${restaurant.rating_average === 1 ? '★☆☆☆☆' : restaurant.price_range === 2 ? '★★☆☆☆' : restaurant.price_range === 3 ? '★★★☆☆' : restaurant.price_range === 4 ? '★★★★☆' : '★★★★★'}`}</Text>
           </View>
           <View style={styles.createOrderContainer}>
-            <TouchableOpacity style={styles.createOrderButton} onPress={createOrder}>
-              <Text>Create Order</Text>
+            <TouchableOpacity style={isDisabled ? styles.disabledButton : styles.activeButton}  onPress={toggleModal} disabled={isDisabled}>
+              <Text style={isDisabled ? styles.disabledButtonText : styles.activeButtonText}>Create Order</Text>
             </TouchableOpacity>
           </View>
         </View>
+        <Modal transparent={true} visible={modalVisible} onRequestClose={toggleModal}>
+          <View style={[styles.modalContainer, {top: modalTopMeasure}]}>
+            <Text>This is my modal content</Text>
+            <Button title="Close Modal" onPress={toggleModal} />
+          </View>
+        </Modal>
         <View style={styles.productsContainer} >
-          {restaurant.products.map((product, index) => (
+          {products.map((product, index) => (
             <View key={index} style={styles.productContainer}>
               <Image style={styles.productImage} source={require("../assets/Images/RestaurantMenu.jpg")} />
               <View style={styles.productInfo}>
@@ -83,7 +100,13 @@ export default function MenuScreen({ navigation, route }) {
                 </Text>
               </View>
               <View style={styles.productAdd}>
-                <Text>test</Text>
+                <TouchableOpacity onPress={() => removeItem(index)}>
+                  <FontAwesomeIcon style={styles.icon} icon={faCircleMinus} />
+                </TouchableOpacity>
+                <Text>{product.quantity}</Text>
+                <TouchableOpacity onPress={() => addItem(index)}>
+                  <FontAwesomeIcon icon={faCirclePlus} />
+                </TouchableOpacity>
               </View>
             </View>
           ))}
@@ -127,12 +150,25 @@ const styles = StyleSheet.create({
   createOrderContainer: {
     width: "45%",
   },
-  createOrderButton: {
+  activeButton: {
     flex: 1,
     alignItems: 'center',
     backgroundColor: '#DA583B',
     borderRadius: 5,
     justifyContent: "center"
+  },
+  disabledButton: {
+    flex: 1,
+    alignItems: 'center',
+    backgroundColor: '#da583b7a',
+    borderRadius: 5,
+    justifyContent: "center"
+  },
+  activeButtonText: {
+    color: "white"
+  },
+  disabledButtonText: {
+    color: "#696969"
   },
   ratingText: {
     alignSelf: "flex-start",
@@ -166,7 +202,9 @@ const styles = StyleSheet.create({
     width: "42%"
   },
   productAdd: {
-    width: "28%"
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "28%",
   },
   productBold : {
     marginLeft: 5,
@@ -176,4 +214,10 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     fontSize: 13,
   },
+  modalContainer: {
+    backgroundColor: "white",
+    width: "95%",
+    height: 200,
+    alignSelf: "center",
+  }
 });

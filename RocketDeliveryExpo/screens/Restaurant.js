@@ -48,7 +48,7 @@ export default function RestaurantScreen({ navigation }) {
             };
           });
           setRestaurants(restaurants);
-          console.log(restaurants)
+          console.log(restaurants[0].products)
         } else {
           // manage case
         }
