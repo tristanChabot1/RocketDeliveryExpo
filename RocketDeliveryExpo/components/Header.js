@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Image, StatusBar } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function Navbar({ navigation }) {
+export default function Header({ navigation }) {
   useEffect(() => {
     const checkLoginState = async () => {
       const isLoggedIn = await AsyncStorage.getItem('isLoggedIn');
@@ -30,7 +30,7 @@ export default function Navbar({ navigation }) {
     >
       <Image style={styles.logo} source={require("../assets/Images/AppLogoV1.png")} />
       <TouchableOpacity style={styles.logout} onPress={handleLogout}>
-        <Text style={styles.logoutText}>Logout</Text>
+        <Text style={styles.logoutText}>LOG OUT</Text>
       </TouchableOpacity>
     </View>
   );
