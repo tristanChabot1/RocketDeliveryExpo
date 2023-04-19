@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, Image } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
 import Header from '../components/Header';
@@ -32,7 +32,7 @@ export default function RestaurantScreen({ navigation }) {
       try {
         const response = await axios.get('https://1fdb-142-182-79-148.ngrok-free.app/restaurants');
         if (response.status === 200) {
-          const restaurants = response.data.map(({ id, address_id, active, email, name, phone, price_range, user_id, rating_average }, index) => {
+          const restaurants = response.data.map(({ id, address_id, active, email, name, phone, price_range, user_id, rating_average, products }, index) => {
             return {
               id,
               address_id,
@@ -43,10 +43,12 @@ export default function RestaurantScreen({ navigation }) {
               price_range,
               user_id,
               rating_average,
+              products,
               image: getRandomNumber(index),
             };
           });
           setRestaurants(restaurants);
+          console.log(restaurants)
         } else {
           // manage case
         }
@@ -105,6 +107,10 @@ export default function RestaurantScreen({ navigation }) {
     }
   }
 
+  const handlePress = (restaurant) => {
+    navigation.replace('Menu', { restaurant });
+  };
+
   return (
     <ScrollView
       contentContainerStyle={styles.scrollViewContent}
@@ -149,7 +155,7 @@ export default function RestaurantScreen({ navigation }) {
         <Text style={styles.title}>RESTAURANTS</Text>
         <View style={styles.restaurantsContainer}>
           {filteredByPrice.map((restaurant, index) => (
-            <View key={index} style={styles.restaurantContainer}>
+            <TouchableOpacity key={index} style={styles.restaurantContainer} onPress={() => handlePress(restaurant)}>
               <Image style={styles.restaurantImage} source={restaurant.image} />
               <View>
                 <Text style={styles.restaurantsText}>{restaurant.name}</Text>
@@ -157,10 +163,10 @@ export default function RestaurantScreen({ navigation }) {
                   {restaurant.price_range === 1 ? '($)' : restaurant.price_range === 2 ? '($$)' : '($$$)'}
                 </Text>
                 <Text style={styles.restaurantsText}>
-                  {restaurant.rating_average === 1 ? '★☆☆☆☆' : restaurant.price_range === 2 ? '★★☆☆☆' : restaurant.price_range === 3 ? '★★★☆☆' : restaurant.price_range === 4 ? '★★★★☆' : '★★★★★'}
+                  {restaurant.rating_average === 1 ? '★☆☆☆☆' : restaurant.rating_average === 2 ? '★★☆☆☆' : restaurant.rating_average === 3 ? '★★★☆☆' : restaurant.rating_average === 4 ? '★★★★☆' : '★★★★★'}
                 </Text>
               </View>
-            </View>
+            </TouchableOpacity>
           ))}
         </View>
       </View>
