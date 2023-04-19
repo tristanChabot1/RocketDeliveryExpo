@@ -5,11 +5,14 @@ import Header from '../components/Header';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faCirclePlus } from '@fortawesome/free-solid-svg-icons/faCirclePlus'
 import { faCircleMinus } from '@fortawesome/free-solid-svg-icons/faCircleMinus'
+import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark'
+
 
 export default function MenuScreen({ navigation, route }) {
   const { restaurant } = route.params;
   const [isDisabled, setIsDisabled] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
+  const [orderSummary, setOrderSummary] = useState({});
   const [products, setProducts] = useState(
     restaurant.products.map(product => ({
       ...product,
@@ -18,7 +21,7 @@ export default function MenuScreen({ navigation, route }) {
   );
 
   const { height } = Dimensions.get('window');
-  const modalTopMeasure = height/2 - 100
+  const modalTopMeasure = height/2 - 150
 
 
   useEffect(() => {
@@ -37,6 +40,15 @@ export default function MenuScreen({ navigation, route }) {
   };
 
   const toggleModal = () => {
+    let order = {};
+    products.forEach(product => {
+      if (product.quantity > 0) {
+        order[product.name] = product.quantity
+      }
+    });
+    setOrderSummary(order);
+
+
     setModalVisible(!modalVisible);
   };
 
@@ -81,9 +93,23 @@ export default function MenuScreen({ navigation, route }) {
           </View>
         </View>
         <Modal transparent={true} visible={modalVisible} onRequestClose={toggleModal}>
-          <View style={[styles.modalContainer, {top: modalTopMeasure}]}>
-            <Text>This is my modal content</Text>
-            <Button title="Close Modal" onPress={toggleModal} />
+          <View style={{ backgroundColor: 'rgba(0, 0, 0, 0.7)', flex: 1 }}>
+            <View style={[styles.modalContainer, {top: modalTopMeasure}]}>
+              <View style={styles.confirmationHeaderContainer}>
+                <Text style={styles.confirmationHeaderText}>Order Confirmation</Text>
+                <TouchableOpacity onPress={toggleModal}>
+                  <FontAwesomeIcon icon={faXmark} size={32} style={{color: "#609475"}} />
+                </TouchableOpacity>
+              </View>
+              <View>
+                <Text>Order Summary</Text>
+                {Object.keys(orderSummary).map((productName, index) => (
+                  <View key={index} style={styles.productContainer}>
+                    <Text>{productName}: {orderSummary[productName]}</Text>
+                  </View>
+                ))}
+              </View>
+            </View>
           </View>
         </Modal>
         <View style={styles.productsContainer} >
@@ -217,7 +243,21 @@ const styles = StyleSheet.create({
   modalContainer: {
     backgroundColor: "white",
     width: "95%",
-    height: 200,
+    height: 300,
     alignSelf: "center",
-  }
+    borderRadius: 10,
+  },
+  confirmationHeaderContainer: {
+    margin: 10,
+    padding: 10,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    backgroundColor: "#222126",
+    borderTopStartRadius: 10,
+    borderTopRightRadius: 10,
+  },
+  confirmationHeaderText: {
+    color: "white",
+    fontSize: 20,
+  },
 });
