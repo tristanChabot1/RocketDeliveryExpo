@@ -3,10 +3,13 @@ import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity, Modal, But
 import axios from 'axios';
 import Header from '../components/Header';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
-import { faCirclePlus } from '@fortawesome/free-solid-svg-icons/faCirclePlus'
-import { faCircleMinus } from '@fortawesome/free-solid-svg-icons/faCircleMinus'
-import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark'
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faCirclePlus } from '@fortawesome/free-solid-svg-icons/faCirclePlus';
+import { faCircleMinus } from '@fortawesome/free-solid-svg-icons/faCircleMinus';
+import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark';
+import { faCircleCheck } from '@fortawesome/free-solid-svg-icons/faCircleCheck';
+import { faCircleXmark } from '@fortawesome/free-solid-svg-icons/faCircleXmark';
+
 
 
 export default function MenuScreen({ navigation, route }) {
@@ -16,7 +19,8 @@ export default function MenuScreen({ navigation, route }) {
   const [orderSummary, setOrderSummary] = useState({});
   const [orderTotal, setOrderTotal] = useState(0);
   const [products, setProducts] = useState([]);
-  const [orderStatus, setOrderStatus] = useState("CONFIRM ORDER");
+  const [orderStatusText, setOrderStatusText] = useState("CONFIRM ORDER");
+  const [orderStatus, setOrderStatus] = useState("undefined");
 
   const { height } = Dimensions.get('window');
   const modalTopMeasure = height/2 - 150
@@ -70,8 +74,13 @@ export default function MenuScreen({ navigation, route }) {
 
     
     setOrderTotal(total);
-    setModalVisible(!modalVisible);
     setOrderSummary(order);
+    setModalVisible(!modalVisible);
+
+    if (modalVisible) {
+      setOrderStatus("undefined")
+    }
+
   };
 
   const removeItem = (index) => {
@@ -93,7 +102,7 @@ export default function MenuScreen({ navigation, route }) {
   };
 
   const handlePostOrder = async () => {
-    setOrderStatus("PROCESSING ORDER...");
+    setOrderStatusText("PROCESSING ORDER...");
     const productOrders = [];
 
     Object.keys(orderSummary).forEach((productName) => {
@@ -132,12 +141,29 @@ export default function MenuScreen({ navigation, route }) {
     })
     .then(data => {
       setTimeout(function() {
-        setOrderStatus("CONFIRM ORDER");
-      }, 3000);
+        setOrderStatusText("CONFIRM ORDER");
+      }, 2000);
+      setOrderStatus("success");
     })
     .catch(error => {
-      console.error('Error creating order:', error);
+      setOrderStatus("error");
     });
+  }
+
+  const handleMessageConfirmationDisplay = (type) => {
+    if (type === "success") {
+      return orderStatus === "undefined" ? "none" : orderStatus === "success" ? "flex" : "none";
+    }
+    else if (type === "error"){
+      return orderStatus === "undefined" ? "none" : orderStatus === "error" ? "flex" : "none";
+    }
+    else if (type === "button"){
+      return orderStatus === "undefined" ? "flex" : orderStatus === "error" ? "flex" : "none";
+    }
+    else {
+      return "none"
+    }
+    
   }
 
 
@@ -185,9 +211,19 @@ export default function MenuScreen({ navigation, route }) {
                 <Text style={{fontWeight: "bold"}}>Total</Text>
                 <Text>{`: $ ${orderTotal}`}</Text>
               </View>
-              <View style={styles.confirmOrderButton}>
-                <Button title={orderStatus} color={"#DA583B"} onPress={handlePostOrder} />
+              <View style={[styles.confirmOrderButton, {display: handleMessageConfirmationDisplay("button")}]}>
+                <Button title={orderStatusText} color={"#DA583B"} onPress={handlePostOrder} />
               </View>
+              <View style={[styles.successContainer, {display: handleMessageConfirmationDisplay("success")}]}>
+                <FontAwesomeIcon icon={faCircleCheck} size={30} style={{color: "#1abc35",}} />
+                <Text>Thank you!</Text>
+                <Text>Your order has been received.</Text>
+              </View>
+              <View style={[styles.errorContainer, {display: handleMessageConfirmationDisplay("error")}]}>
+                <FontAwesomeIcon icon={faCircleXmark} size={30} style={{color: "#e11919",}} />
+                <Text>Your order was not processed successfully.</Text>
+                <Text>Please try again.</Text>
+              </View>  
             </View>
           </View>
         </Modal>
@@ -353,6 +389,7 @@ const styles = StyleSheet.create({
   orderTotalContainer: {
     flexDirection: "row",
     justifyContent: "flex-end",
+    marginTop: 10,
     marginHorizontal: 10,
     paddingHorizontal: 10,
   },
@@ -363,5 +400,16 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     borderTopWidth: 1,
     borderColor: "#dce0dd"
+  },
+  successContainer: {
+    alignItems: "center",
+    marginVertical: 15,
+    paddingTop: 20,
+    borderTopWidth: 1,
+    borderColor: "#dce0dd"
+  },
+  errorContainer: {
+    alignItems: "center",
+    marginBottom: 10,
   },
 });
