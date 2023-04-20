@@ -32,7 +32,7 @@ export default function RestaurantScreen({ navigation }) {
       try {
         const response = await axios.get('https://1fdb-142-182-79-148.ngrok-free.app/restaurants');
         if (response.status === 200) {
-          const restaurants = response.data.map(({ id, address_id, active, email, name, phone, price_range, user_id, rating_average, products }, index) => {
+          const restaurants = response.data.map(({ id, address_id, active, email, name, phone, price_range, user_id, rating_average }, index) => {
             return {
               id,
               address_id,
@@ -43,12 +43,10 @@ export default function RestaurantScreen({ navigation }) {
               price_range,
               user_id,
               rating_average,
-              products,
               image: getRandomNumber(index),
             };
           });
           setRestaurants(restaurants);
-          console.log(restaurants[0].products)
         } else {
           // manage case
         }

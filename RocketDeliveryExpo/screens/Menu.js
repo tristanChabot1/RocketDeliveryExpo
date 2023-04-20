@@ -13,16 +13,29 @@ export default function MenuScreen({ navigation, route }) {
   const [isDisabled, setIsDisabled] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [orderSummary, setOrderSummary] = useState({});
-  const [products, setProducts] = useState(
-    restaurant.products.map(product => ({
-      ...product,
-      quantity: 0,
-    }))
-  );
+  const [orderTotal, setOrderTotal] = useState(0);
+  const [products, setProducts] = useState([]);
 
   const { height } = Dimensions.get('window');
   const modalTopMeasure = height/2 - 150
 
+
+  useEffect(() => {
+    const getRestaurants = async () => {
+      try {
+        const response = await axios.get(`https://1fdb-142-182-79-148.ngrok-free.app/api/products?restaurant=${restaurant.id}`);
+        if (response.status === 200) {
+          setProducts(response.data.map(product => ({ ...product, quantity: 0 })));
+        } else {
+          // manage case
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  
+    getRestaurants();
+  }, []);
 
   useEffect(() => {
     let flag = true;
@@ -40,16 +53,23 @@ export default function MenuScreen({ navigation, route }) {
   };
 
   const toggleModal = () => {
-    let order = {};
+    const order = {};
+    let total = 0;
+
     products.forEach(product => {
       if (product.quantity > 0) {
-        order[product.name] = product.quantity
+        order[product.name] = {
+          quantity: product.quantity,
+          cost: product.cost
+        };
+        total += (product.quantity * product.cost)
       }
     });
-    setOrderSummary(order);
 
-
+    
+    setOrderTotal(total);
     setModalVisible(!modalVisible);
+    setOrderSummary(order);
   };
 
   const removeItem = (index) => {
@@ -101,13 +121,22 @@ export default function MenuScreen({ navigation, route }) {
                   <FontAwesomeIcon icon={faXmark} size={32} style={{color: "#609475"}} />
                 </TouchableOpacity>
               </View>
-              <View>
-                <Text>Order Summary</Text>
+              <View style={styles.orderSummaryContainer}>
+                <Text style={{fontWeight: "bold"}}>Order Summary</Text>
                 {Object.keys(orderSummary).map((productName, index) => (
-                  <View key={index} style={styles.productContainer}>
-                    <Text>{productName}: {orderSummary[productName]}</Text>
+                  <View key={index} style={styles.singleOrderContainer}>
+                    <Text>{productName}</Text>
+                    <Text>{`x${orderSummary[productName].quantity}`}</Text>
+                    <Text>{`$ ${orderSummary[productName].cost}`}</Text>
                   </View>
                 ))}
+              </View>
+              <View style={styles.orderTotalContainer}>
+                <Text style={{fontWeight: "bold"}}>Total</Text>
+                <Text>{`: $ ${orderTotal}`}</Text>
+              </View>
+              <View style={styles.confirmOrderButton}>
+                <Button title='CONFIRM ORDER' color={"#DA583B"} />
               </View>
             </View>
           </View>
@@ -243,7 +272,7 @@ const styles = StyleSheet.create({
   modalContainer: {
     backgroundColor: "white",
     width: "95%",
-    height: 300,
+    height: "auto",
     alignSelf: "center",
     borderRadius: 10,
   },
@@ -259,5 +288,30 @@ const styles = StyleSheet.create({
   confirmationHeaderText: {
     color: "white",
     fontSize: 20,
+  },
+  orderSummaryContainer: {
+    marginHorizontal: 10,
+    paddingHorizontal: 10,
+    borderBottomWidth: 1,
+    borderColor: "#222126",
+  },
+  singleOrderContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginVertical: 5,
+  },
+  orderTotalContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    marginHorizontal: 10,
+    paddingHorizontal: 10,
+  },
+  confirmOrderButton: {
+    marginHorizontal: 20,
+    marginBottom: 25,
+    marginTop: 15,
+    paddingTop: 20,
+    borderTopWidth: 1,
+    borderColor: "#dce0dd"
   },
 });
