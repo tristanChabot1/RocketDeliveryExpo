@@ -35,6 +35,7 @@ export default function LoginScreen({ navigation }) {
       if (response.data.success) {
         setShow(false);
         await AsyncStorage.setItem('isLoggedIn', 'true');
+        await AsyncStorage.setItem('customerID', `${response.data.customer_id}`);
         navigation.navigate('Restaurant');
       } else {
         setShow(true);

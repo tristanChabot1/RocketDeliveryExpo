@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity, Modal, Button, Dimensions } from 'react-native';
 import axios from 'axios';
 import Header from '../components/Header';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faCirclePlus } from '@fortawesome/free-solid-svg-icons/faCirclePlus'
 import { faCircleMinus } from '@fortawesome/free-solid-svg-icons/faCircleMinus'
@@ -15,6 +16,7 @@ export default function MenuScreen({ navigation, route }) {
   const [orderSummary, setOrderSummary] = useState({});
   const [orderTotal, setOrderTotal] = useState(0);
   const [products, setProducts] = useState([]);
+  const [orderStatus, setOrderStatus] = useState("CONFIRM ORDER");
 
   const { height } = Dimensions.get('window');
   const modalTopMeasure = height/2 - 150
@@ -90,6 +92,54 @@ export default function MenuScreen({ navigation, route }) {
     });
   };
 
+  const handlePostOrder = async () => {
+    setOrderStatus("PROCESSING ORDER...");
+    const productOrders = [];
+
+    Object.keys(orderSummary).forEach((productName) => {
+      const product = products.find((p) => p.name === productName);
+      if (orderSummary[productName].quantity > 0 && product) {
+        productOrders.push({
+          id: product.id,
+          product_quantity: orderSummary[productName].quantity,
+          product_unit_cost: parseFloat(product.cost),
+        });
+      }
+    });
+
+    const customerID = parseInt(await AsyncStorage.getItem('customerID'))
+
+    const data = {
+      order: {
+        restaurant_id: restaurant.id,
+        customer_id: customerID,
+        product_orders: productOrders
+      }
+    };
+    
+    fetch('https://1fdb-142-182-79-148.ngrok-free.app/api/orders', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+      return response.json();
+    })
+    .then(data => {
+      setTimeout(function() {
+        setOrderStatus("CONFIRM ORDER");
+      }, 3000);
+    })
+    .catch(error => {
+      console.error('Error creating order:', error);
+    });
+  }
+
 
   return (
     <ScrollView
@@ -136,7 +186,7 @@ export default function MenuScreen({ navigation, route }) {
                 <Text>{`: $ ${orderTotal}`}</Text>
               </View>
               <View style={styles.confirmOrderButton}>
-                <Button title='CONFIRM ORDER' color={"#DA583B"} />
+                <Button title={orderStatus} color={"#DA583B"} onPress={handlePostOrder} />
               </View>
             </View>
           </View>

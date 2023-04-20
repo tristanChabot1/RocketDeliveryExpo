@@ -17,6 +17,7 @@ export default function Header({ navigation }) {
 
   const handleLogout = async () => {
     await AsyncStorage.removeItem('isLoggedIn');
+    await AsyncStorage.removeItem('customerID');
     if (navigation) {
       navigation.navigate('Login');
     }
