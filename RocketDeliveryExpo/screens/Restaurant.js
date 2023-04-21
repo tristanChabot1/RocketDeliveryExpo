@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
   title: {
     alignSelf: "flex-start",
     fontSize: 20,
-    fontWeight: "bold",
+    fontFamily: "Oswald-SemiBold",
     marginBottom: 20,
   },
   filterContainer: {
@@ -203,8 +203,8 @@ const styles = StyleSheet.create({
   },
   ratingText: {
     alignSelf: "flex-start",
-    fontSize: 17,
-    fontWeight: "bold"
+    fontSize: 20,
+    fontFamily: "Oswald-Regular",
   },
   ratingSelect: {
     flexDirection: 'row',
@@ -248,5 +248,6 @@ const styles = StyleSheet.create({
   },
   restaurantsText: {
     marginHorizontal: 5,
+    fontFamily: "Oswald-Regular",
   },
 });

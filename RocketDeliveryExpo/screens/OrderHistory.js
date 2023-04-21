@@ -73,8 +73,8 @@ export default function OrderHistoryScreen({ navigation }) {
             <View style={styles.tableBody}>
               {orders.map((order, index) => (
                 <View key={index} style={styles.orderContainer}>
-                  <Text style={{width: "44%", paddingLeft: "3%"}}>{order.restaurant_name}</Text>
-                  <Text style={{width: "40%"}}>{order.status}</Text>
+                  <Text style={{width: "45.5%", paddingLeft: "3%", fontFamily: "Oswald-Regular"}}>{order.restaurant_name}</Text>
+                  <Text style={{width: "37.5%", fontFamily: "Oswald-Regular"}}>{order.status}</Text>
                   <TouchableOpacity onPress={() => ToggleView(order)}>
                     <FontAwesomeIcon icon={faMagnifyingGlassPlus}/>
                   </TouchableOpacity>
@@ -89,28 +89,27 @@ export default function OrderHistoryScreen({ navigation }) {
                   <View style={{paddingLeft: 10}}>
                     <Text style={styles.modalTitle}>{orderState.restaurantName}</Text>
                     <Text style={styles.whiteText}>{`Order Date: ${orderState.orderDate}`}</Text>
-                    <Text style={styles.whiteText}>{`Status: ${orderState.status}`}</Text>
+                    <Text style={styles.whiteText}>{`Status: ${orderState.status?.toUpperCase()}`}</Text>
                     <Text style={styles.whiteText}>{`Courier: ${orderState.courier}`}</Text>
-                    {/* <Text style={styles.modalTitle}>{orderState.products[0]}</Text> */}
                   </View>
                   <TouchableOpacity onPress={ToggleView} style={{justifyContent: "center"}}>
                     <FontAwesomeIcon icon={faXmark} size={32} style={{color: "#609475"}}/>
                   </TouchableOpacity>
                 </View>
                 <View style={styles.modalBodyContainer}>
-                <View>
-                  {orderState.products.map((product, index) => (
+                  <View>
+                    {orderState.products.map((product, index) => (
                       <View key={index} style={styles.modalOrderContainer}>
-                        <Text style={{width: "60%"}}>{product.product_name}</Text>
-                        <Text style={{width: "25%"}}>{`x${product.quantity}`}</Text>
+                        <Text style={{width: "55%"}}>{product.product_name}</Text>
+                        <Text style={{width: "20%", marginRight: "auto"}}>{`x${product.quantity}`}</Text>
                         <Text>{`$ ${parseFloat(product.unit_cost).toFixed(2)}`}</Text>
                       </View>
                     ))}
-                </View>
-                <View style={styles.orderTotalContainer}>
-                  <Text style={{fontWeight: "bold"}}>Total</Text>
-                  <Text>{`: $ ${orderState.total_cost}`}</Text>
-                </View>
+                  </View>
+                  <View style={styles.orderTotalContainer}>
+                    <Text style={{fontWeight: "bold"}}>Total</Text>
+                    <Text>{`: $ ${orderState.total_cost}`}</Text>
+                  </View>
                 </View>
               </View>
             </View>
@@ -137,20 +136,21 @@ const styles = StyleSheet.create({
   title: {
     alignSelf: "flex-start",
     fontSize: 20,
-    fontWeight: "bold",
+    fontFamily: "Oswald-SemiBold",
     marginBottom: 20,
   },
   tableContainer: {
     width: "100%"
   },
   tableHeader: {
-    flex: 1,
     flexDirection: "row",
     justifyContent: "space-around",
     backgroundColor: "#222126"
   },
   whiteText: {
-    color: "white"
+    color: "white",
+    fontFamily: "Oswald-Regular",
+    paddingVertical: 5,
   },
   orderContainer: {
     flexDirection: 'row',
@@ -175,7 +175,8 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     color: "#DA583B",
-    fontSize: 20
+    fontSize: 20,
+    fontFamily: "Oswald-SemiBold",
   },
   modalBodyContainer: {
     marginHorizontal: 10,

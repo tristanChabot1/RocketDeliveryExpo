@@ -63,6 +63,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logoutText:{
-    color: "white"
+    color: "white",
+    fontFamily: "Oswald-Regular"
   },
 });

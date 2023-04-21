@@ -5,11 +5,21 @@ import LoginScreen from './screens/login';
 import RestaurantScreen from './screens/Restaurant';
 import MenuScreen from './screens/Menu';
 import OrderHistoryScreen from './screens/OrderHistory';
-
+import { useFonts } from 'expo-font';
 
 const Stack = createStackNavigator();
 
 export default function App()  {
+  const [loaded] = useFonts({
+    'Oswald-Regular': require('./assets/fonts/Oswald-Regular.ttf'),
+    'Oswald-SemiBold': require('./assets/fonts/Oswald-SemiBold.ttf'),
+    'Oswald-Bold': require('./assets/fonts/Oswald-Bold.ttf'),
+  });
+
+  if (!loaded) {
+    return null;
+  }
+
   return (
     <NavigationContainer>
       <Stack.Navigator>

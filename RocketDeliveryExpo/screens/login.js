@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -52,7 +52,7 @@ export default function LoginScreen({ navigation }) {
     >
       <Image style={styles.logo} source={require("../assets/Images/AppLogoV2.png")} />
       <View style={styles.formContainer}>
-        <Text style={styles.welcome}>Welcome Back</Text>
+        <Text style={[styles.welcome]}>Welcome Back</Text>
         <Text style={styles.login}>Login to begin</Text>
         <Text style={styles.label}>Email</Text>
         <TextInput
@@ -98,8 +98,7 @@ const styles = StyleSheet.create({
   welcome:{
     alignSelf: "flex-start",
     fontSize: 20,
-    fontWeight: "bold",
-    fontFamily: "Oswald"
+    fontFamily: "Oswald-SemiBold"
   },
   login:{
     alignSelf: "flex-start",
@@ -126,7 +125,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#fff',
-    fontWeight: 'bold',
+    fontFamily: "Oswald-Regular"
   },
   errorMessage: {
     color: "red",

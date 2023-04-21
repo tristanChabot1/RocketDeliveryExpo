@@ -54,11 +54,6 @@ export default function MenuScreen({ navigation, route }) {
     setIsDisabled(flag);
   }, [products]);
 
-
-  const handlePress = () => {
-    navigation.replace('Restaurant');
-  };
-
   const toggleModal = () => {
     const order = {};
     let total = 0;
@@ -173,9 +168,7 @@ export default function MenuScreen({ navigation, route }) {
       <Header navigation={navigation} />
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <View style={styles.container}>
-          <TouchableOpacity onPress={handlePress}>
-              <Text style={styles.title}>RESTAURANT MENU</Text>
-          </TouchableOpacity>
+          <Text style={styles.title}>RESTAURANT MENU</Text>
           <View style={styles.topContainer}>
             <View style={styles.restaurantInfoContainer}>
               <Text style={styles.restaurantName}>{restaurant.name}</Text>
@@ -184,7 +177,7 @@ export default function MenuScreen({ navigation, route }) {
             </View>
             <View style={styles.createOrderContainer}>
               <TouchableOpacity style={isDisabled ? styles.disabledButton : styles.activeButton}  onPress={toggleModal} disabled={isDisabled}>
-                <Text style={isDisabled ? styles.disabledButtonText : styles.activeButtonText}>Create Order</Text>
+                <Text style={[isDisabled ? styles.disabledButtonText : styles.activeButtonText, {fontFamily: "Oswald-Regular"}]}>Create Order</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -201,8 +194,8 @@ export default function MenuScreen({ navigation, route }) {
                   <Text style={{fontWeight: "bold"}}>Order Summary</Text>
                   {Object.keys(orderSummary).map((productName, index) => (
                     <View key={index} style={styles.singleOrderContainer}>
-                      <Text style={{width: "60%"}}>{productName}</Text>
-                      <Text style={{width: "25%"}}>{`x${orderSummary[productName].quantity}`}</Text>
+                      <Text style={{width: "55%"}}>{productName}</Text>
+                      <Text style={{width: "20%", marginRight: "auto"}}>{`x${orderSummary[productName].quantity}`}</Text>
                       <Text>{`$ ${orderSummary[productName].cost}`}</Text>
                     </View>
                   ))}
@@ -274,7 +267,7 @@ const styles = StyleSheet.create({
   title: {
     alignSelf: "flex-start",
     fontSize: 20,
-    fontWeight: "bold",
+    fontFamily: "Oswald-SemiBold",
     marginBottom: 20,
   },
   topContainer: {
@@ -287,21 +280,22 @@ const styles = StyleSheet.create({
     width: "45%",
   },
   restaurantName: {
-    fontSize: 18,
-    fontWeight: "bold",
+    fontSize: 19,
+    fontFamily: "Oswald-Regular",
   },
   createOrderContainer: {
     width: "45%",
+    justifyContent: "center"
   },
   activeButton: {
-    flex: 1,
+    flex: 0.5,
     alignItems: 'center',
     backgroundColor: '#DA583B',
     borderRadius: 5,
     justifyContent: "center"
   },
   disabledButton: {
-    flex: 1,
+    flex: 0.5,
     alignItems: 'center',
     backgroundColor: '#da583b7a',
     borderRadius: 5,
@@ -351,11 +345,13 @@ const styles = StyleSheet.create({
   },
   productBold : {
     marginLeft: 5,
-    fontWeight: "bold",
+    fontSize: 13,
+    fontFamily: "Oswald-SemiBold",
   },
   productText: {
     marginLeft: 5,
-    fontSize: 13,
+    fontSize: 12,
+    fontFamily: "Oswald-Regular",
   },
   modalContainer: {
     backgroundColor: "white",
@@ -378,8 +374,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   orderSummaryContainer: {
-    marginHorizontal: 10,
-    paddingHorizontal: 10,
+    marginHorizontal: 20,
     borderBottomWidth: 1,
     borderColor: "#222126",
   },
@@ -391,8 +386,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-end",
     marginTop: 10,
-    marginHorizontal: 10,
-    paddingHorizontal: 10,
+    marginHorizontal: 20,
   },
   confirmOrderButton: {
     marginHorizontal: 20,
