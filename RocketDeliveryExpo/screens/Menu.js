@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity, Modal, Button, Dimensions } from 'react-native';
 import axios from 'axios';
 import Header from '../components/Header';
+import Navbar from '../components/Navbar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faCirclePlus } from '@fortawesome/free-solid-svg-icons/faCirclePlus';
@@ -242,17 +243,18 @@ export default function MenuScreen({ navigation, route }) {
               </View>
               <View style={styles.productAdd}>
                 <TouchableOpacity onPress={() => removeItem(index)}>
-                  <FontAwesomeIcon style={styles.icon} icon={faCircleMinus} />
+                  <FontAwesomeIcon size={20} icon={faCircleMinus} />
                 </TouchableOpacity>
                 <Text>{product.quantity}</Text>
                 <TouchableOpacity onPress={() => addItem(index)}>
-                  <FontAwesomeIcon icon={faCirclePlus} />
+                  <FontAwesomeIcon  size={20} icon={faCirclePlus} />
                 </TouchableOpacity>
               </View>
             </View>
           ))}
         </View>
       </View>
+      <Navbar navigation={navigation} />
     </ScrollView>
   );
 }

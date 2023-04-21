@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import LoginScreen from './screens/login';
 import RestaurantScreen from './screens/Restaurant';
 import MenuScreen from './screens/Menu';
+import OrderHistoryScreen from './screens/OrderHistory';
 
 const Stack = createStackNavigator();
 
@@ -23,6 +24,11 @@ export default function Navigation() {
         <Stack.Screen
           name="Menu"
           component={MenuScreen}
+          options={{ header: null }}
+        />
+        <Stack.Screen
+          name="OrderHistory"
+          component={OrderHistoryScreen}
           options={{ header: null }}
         />
       </Stack.Navigator>
