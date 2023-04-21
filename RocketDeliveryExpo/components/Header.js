@@ -26,9 +26,7 @@ export default function Header({ navigation }) {
   const statusBarHeight = StatusBar.currentHeight || 0;
 
   return (
-    <View
-      style={[styles.container, { marginTop: statusBarHeight }]}
-    >
+    <View style={[styles.container, { marginTop: statusBarHeight }]}>
       <Image style={styles.logo} source={require("../assets/Images/AppLogoV1.png")} />
       <TouchableOpacity style={styles.logout} onPress={handleLogout}>
         <Text style={styles.logoutText}>LOG OUT</Text>

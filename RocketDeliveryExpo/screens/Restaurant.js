@@ -60,38 +60,16 @@ export default function RestaurantScreen({ navigation }) {
     if (selectedRating === "") {
       return restaurants;
     } else {
-      let filteredRestaurants;
-      switch (selectedRating) {
-        case "1":
-          filteredRestaurants = restaurants.filter(
-            (restaurant) => restaurant.rating_average >= 0 && restaurant.rating_average <= 1
-          );
-          break;
-        case "2":
-          filteredRestaurants = restaurants.filter(
-            (restaurant) => restaurant.rating_average > 1 && restaurant.rating_average <= 2
-          );
-          break;
-        case "3":
-          filteredRestaurants = restaurants.filter(
-            (restaurant) => restaurant.rating_average > 2 && restaurant.rating_average <= 3
-          );
-          break;
-        case "4":
-          filteredRestaurants = restaurants.filter(
-            (restaurant) => restaurant.rating_average > 3 && restaurant.rating_average <= 4
-          );
-          break;
-        case "5":
-          filteredRestaurants = restaurants.filter(
-            (restaurant) => restaurant.rating_average > 4 && restaurant.rating_average <= 5
-          );
-          break;
-        default:
-          filteredRestaurants = restaurants;
-          break;
-      }
-      return filteredRestaurants;
+      return restaurants.filter((restaurant) => {
+        const rating = restaurant.rating_average;
+        return (
+          (selectedRating === "1" && rating >= 0 && rating <= 1) ||
+          (selectedRating === "2" && rating > 1 && rating <= 2) ||
+          (selectedRating === "3" && rating > 2 && rating <= 3) ||
+          (selectedRating === "4" && rating > 3 && rating <= 4) ||
+          (selectedRating === "5" && rating > 4 && rating <= 5)
+        );
+      });
     }
   }
 

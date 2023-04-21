@@ -28,9 +28,9 @@ export default function OrderHistoryScreen({ navigation }) {
     setOrderState({
       modalVisible: !orderState.modalVisible,
       restaurantName: order.restaurant_name,
-      orderDate: "???",
+      orderDate: order.date?.slice(0, 10),
       status: order.status,
-      courier: "",
+      courier: "None found yet",
       products: order.products || [],
       total_cost: order.total_cost
     });
@@ -42,12 +42,7 @@ export default function OrderHistoryScreen({ navigation }) {
       try {
         const response = await axios.get(`https://1fdb-142-182-79-148.ngrok-free.app/api/orders?type=customer&id=${customerID}`);
         if (response) {
-          // console.log(`response: ${response}`)
           setOrders(response.data);
-          console.log(orders)
-        } else {
-          console.log("we are here")
-          // manage case
         }
       } catch (error) {
         console.log(error);
