@@ -169,93 +169,93 @@ export default function MenuScreen({ navigation, route }) {
 
 
   return (
-    <ScrollView
-      contentContainerStyle={styles.scrollViewContent}
-    >
+    <View style={{flex: 1}}>
       <Header navigation={navigation} />
-      <View style={styles.container}>
-        <TouchableOpacity onPress={handlePress}>
-            <Text style={styles.title}>RESTAURANT MENU</Text>
-        </TouchableOpacity>
-        <View style={styles.topContainer}>
-          <View style={styles.restaurantInfoContainer}>
-            <Text style={styles.restaurantName}>{restaurant.name}</Text>
-            <Text>{`Price: ${restaurant.price_range === 1 ? '($)' : restaurant.price_range === 2 ? '($$)' : '($$$)'}`}</Text>
-            <Text>{`Rating: ${restaurant.rating_average === 1 ? '★☆☆☆☆' : restaurant.price_range === 2 ? '★★☆☆☆' : restaurant.price_range === 3 ? '★★★☆☆' : restaurant.price_range === 4 ? '★★★★☆' : '★★★★★'}`}</Text>
-          </View>
-          <View style={styles.createOrderContainer}>
-            <TouchableOpacity style={isDisabled ? styles.disabledButton : styles.activeButton}  onPress={toggleModal} disabled={isDisabled}>
-              <Text style={isDisabled ? styles.disabledButtonText : styles.activeButtonText}>Create Order</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-        <Modal transparent={true} visible={modalVisible} onRequestClose={toggleModal}>
-          <View style={{ backgroundColor: 'rgba(0, 0, 0, 0.7)', flex: 1 }}>
-            <View style={[styles.modalContainer, {top: modalTopMeasure}]}>
-              <View style={styles.confirmationHeaderContainer}>
-                <Text style={styles.confirmationHeaderText}>Order Confirmation</Text>
-                <TouchableOpacity onPress={toggleModal}>
-                  <FontAwesomeIcon icon={faXmark} size={32} style={{color: "#609475"}} />
-                </TouchableOpacity>
-              </View>
-              <View style={styles.orderSummaryContainer}>
-                <Text style={{fontWeight: "bold"}}>Order Summary</Text>
-                {Object.keys(orderSummary).map((productName, index) => (
-                  <View key={index} style={styles.singleOrderContainer}>
-                    <Text>{productName}</Text>
-                    <Text>{`x${orderSummary[productName].quantity}`}</Text>
-                    <Text>{`$ ${orderSummary[productName].cost}`}</Text>
-                  </View>
-                ))}
-              </View>
-              <View style={styles.orderTotalContainer}>
-                <Text style={{fontWeight: "bold"}}>Total</Text>
-                <Text>{`: $ ${orderTotal}`}</Text>
-              </View>
-              <View style={[styles.confirmOrderButton, {display: handleMessageConfirmationDisplay("button")}]}>
-                <Button title={orderStatusText} color={"#DA583B"} onPress={handlePostOrder} />
-              </View>
-              <View style={[styles.successContainer, {display: handleMessageConfirmationDisplay("success")}]}>
-                <FontAwesomeIcon icon={faCircleCheck} size={30} style={{color: "#1abc35",}} />
-                <Text>Thank you!</Text>
-                <Text>Your order has been received.</Text>
-              </View>
-              <View style={[styles.errorContainer, {display: handleMessageConfirmationDisplay("error")}]}>
-                <FontAwesomeIcon icon={faCircleXmark} size={30} style={{color: "#e11919",}} />
-                <Text>Your order was not processed successfully.</Text>
-                <Text>Please try again.</Text>
-              </View>  
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <View style={styles.container}>
+          <TouchableOpacity onPress={handlePress}>
+              <Text style={styles.title}>RESTAURANT MENU</Text>
+          </TouchableOpacity>
+          <View style={styles.topContainer}>
+            <View style={styles.restaurantInfoContainer}>
+              <Text style={styles.restaurantName}>{restaurant.name}</Text>
+              <Text>{`Price: ${restaurant.price_range === 1 ? '($)' : restaurant.price_range === 2 ? '($$)' : '($$$)'}`}</Text>
+              <Text>{`Rating: ${restaurant.rating_average === 1 ? '★☆☆☆☆' : restaurant.price_range === 2 ? '★★☆☆☆' : restaurant.price_range === 3 ? '★★★☆☆' : restaurant.price_range === 4 ? '★★★★☆' : '★★★★★'}`}</Text>
+            </View>
+            <View style={styles.createOrderContainer}>
+              <TouchableOpacity style={isDisabled ? styles.disabledButton : styles.activeButton}  onPress={toggleModal} disabled={isDisabled}>
+                <Text style={isDisabled ? styles.disabledButtonText : styles.activeButtonText}>Create Order</Text>
+              </TouchableOpacity>
             </View>
           </View>
-        </Modal>
-        <View style={styles.productsContainer} >
-          {products.map((product, index) => (
-            <View key={index} style={styles.productContainer}>
-              <Image style={styles.productImage} source={require("../assets/Images/RestaurantMenu.jpg")} />
-              <View style={styles.productInfo}>
-                <Text style={styles.productBold}>{product.name}</Text>
-                <Text style={styles.productBold}>
-                  {`$ ${product.cost}`}
-                </Text>
-                <Text style={styles.productText}>
-                  {product.description || "This is a default text. I bet this is the best dish tho"}
-                </Text>
-              </View>
-              <View style={styles.productAdd}>
-                <TouchableOpacity onPress={() => removeItem(index)}>
-                  <FontAwesomeIcon size={20} icon={faCircleMinus} />
-                </TouchableOpacity>
-                <Text>{product.quantity}</Text>
-                <TouchableOpacity onPress={() => addItem(index)}>
-                  <FontAwesomeIcon  size={20} icon={faCirclePlus} />
-                </TouchableOpacity>
+          <Modal transparent={true} visible={modalVisible} onRequestClose={toggleModal}>
+            <View style={{ backgroundColor: 'rgba(0, 0, 0, 0.7)', flex: 1 }}>
+              <View style={[styles.modalContainer, {top: modalTopMeasure}]}>
+                <View style={styles.confirmationHeaderContainer}>
+                  <Text style={styles.confirmationHeaderText}>Order Confirmation</Text>
+                  <TouchableOpacity onPress={toggleModal}>
+                    <FontAwesomeIcon icon={faXmark} size={32} style={{color: "#609475"}} />
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.orderSummaryContainer}>
+                  <Text style={{fontWeight: "bold"}}>Order Summary</Text>
+                  {Object.keys(orderSummary).map((productName, index) => (
+                    <View key={index} style={styles.singleOrderContainer}>
+                      <Text style={{width: "60%"}}>{productName}</Text>
+                      <Text style={{width: "25%"}}>{`x${orderSummary[productName].quantity}`}</Text>
+                      <Text>{`$ ${orderSummary[productName].cost}`}</Text>
+                    </View>
+                  ))}
+                </View>
+                <View style={styles.orderTotalContainer}>
+                  <Text style={{fontWeight: "bold"}}>Total</Text>
+                  <Text>{`: $ ${orderTotal}`}</Text>
+                </View>
+                <View style={[styles.confirmOrderButton, {display: handleMessageConfirmationDisplay("button")}]}>
+                  <Button title={orderStatusText} color={"#DA583B"} onPress={handlePostOrder} />
+                </View>
+                <View style={[styles.successContainer, {display: handleMessageConfirmationDisplay("success")}]}>
+                  <FontAwesomeIcon icon={faCircleCheck} size={30} style={{color: "#1abc35",}} />
+                  <Text>Thank you!</Text>
+                  <Text>Your order has been received.</Text>
+                </View>
+                <View style={[styles.errorContainer, {display: handleMessageConfirmationDisplay("error")}]}>
+                  <FontAwesomeIcon icon={faCircleXmark} size={30} style={{color: "#e11919",}} />
+                  <Text>Your order was not processed successfully.</Text>
+                  <Text>Please try again.</Text>
+                </View>  
               </View>
             </View>
-          ))}
+          </Modal>
+          <View style={styles.productsContainer} >
+            {products.map((product, index) => (
+              <View key={index} style={styles.productContainer}>
+                <Image style={styles.productImage} source={require("../assets/Images/RestaurantMenu.jpg")} />
+                <View style={styles.productInfo}>
+                  <Text style={styles.productBold}>{product.name}</Text>
+                  <Text style={styles.productBold}>
+                    {`$ ${parseFloat(product.cost).toFixed(2)}`}
+                  </Text>
+                  <Text style={styles.productText}>
+                    {product.description || "This is a default text. I bet this is the best dish tho"}
+                  </Text>
+                </View>
+                <View style={styles.productAdd}>
+                  <TouchableOpacity onPress={() => removeItem(index)}>
+                    <FontAwesomeIcon size={20} icon={faCircleMinus} />
+                  </TouchableOpacity>
+                  <Text>{product.quantity}</Text>
+                  <TouchableOpacity onPress={() => addItem(index)}>
+                    <FontAwesomeIcon  size={20} icon={faCirclePlus} />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ))}
+          </View>
         </View>
-      </View>
+      </ScrollView>
       <Navbar navigation={navigation} />
-    </ScrollView>
+    </View>
   );
 }
 
@@ -385,7 +385,6 @@ const styles = StyleSheet.create({
   },
   singleOrderContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
     marginVertical: 5,
   },
   orderTotalContainer: {

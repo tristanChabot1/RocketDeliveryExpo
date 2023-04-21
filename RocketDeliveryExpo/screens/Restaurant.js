@@ -3,12 +3,12 @@ import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity } from 'rea
 import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
 import Header from '../components/Header';
+import Navbar from '../components/Navbar';
 
 export default function RestaurantScreen({ navigation }) {
   const [restaurants, setRestaurants] = useState([])
   const [selectedRating, setSelectedRating] = useState("");
   const [selectedPrice, setSelectedPrice] = useState("");
-  const [selectedImage, setSelectedImage] = useState(null);
 
   const filteredByRating = filterRestaurantsByRating(restaurants, selectedRating);
   const filteredByPrice = filterRestaurantsByPrice(filteredByRating, selectedPrice);
@@ -47,8 +47,6 @@ export default function RestaurantScreen({ navigation }) {
             };
           });
           setRestaurants(restaurants);
-        } else {
-          // manage case
         }
       } catch (error) {
         console.log(error);
@@ -110,65 +108,66 @@ export default function RestaurantScreen({ navigation }) {
   };
 
   return (
-    <ScrollView
-      contentContainerStyle={styles.scrollViewContent}
-    >
+    <View style={{flex: 1}}>
       <Header navigation={navigation} />
-      <View style={styles.container}>
-        <Text style={styles.title}>NEARBY RESTAURANTS</Text>
-        <View style={styles.filterContainer}>
-          <View style={styles.ratingContainer}>
-            <Text style={styles.ratingText}>Rating</Text>
-            <View style={styles.ratingSelect}>
-              <Picker
-                style={styles.picker}
-                selectedValue={selectedRating}
-                onValueChange={(itemValue, itemIndex) => setSelectedRating(itemValue)}
-              >
-                <Picker.Item label="--Select--" value="" />
-                <Picker.Item label="★☆☆☆☆" value="1" />
-                <Picker.Item label="★★☆☆☆" value="2" />
-                <Picker.Item label="★★★☆☆" value="3" />
-                <Picker.Item label="★★★★☆" value="4" />
-                <Picker.Item label="★★★★★" value="5" />
-              </Picker>
-            </View>
-          </View>
-          <View style={styles.priceContainer}>
-            <Text style={styles.ratingText}>Price</Text>
-            <View style={styles.ratingSelect}>
-              <Picker
-                style={styles.picker}
-                selectedValue={selectedPrice}
-                onValueChange={(itemValue, itemIndex) => setSelectedPrice(itemValue)}
-              >
-                <Picker.Item label="--Select--" value="" />
-                <Picker.Item label="$" value="1" />
-                <Picker.Item label="$$" value="2" />
-                <Picker.Item label="$$$" value="3" />
-              </Picker>
-            </View>
-          </View>
-        </View>
-        <Text style={styles.title}>RESTAURANTS</Text>
-        <View style={styles.restaurantsContainer}>
-          {filteredByPrice.map((restaurant, index) => (
-            <TouchableOpacity key={index} style={styles.restaurantContainer} onPress={() => handlePress(restaurant)}>
-              <Image style={styles.restaurantImage} source={restaurant.image} />
-              <View>
-                <Text style={styles.restaurantsText}>{restaurant.name}</Text>
-                <Text style={styles.restaurantsText}>
-                  {restaurant.price_range === 1 ? '($)' : restaurant.price_range === 2 ? '($$)' : '($$$)'}
-                </Text>
-                <Text style={styles.restaurantsText}>
-                  {restaurant.rating_average === 1 ? '★☆☆☆☆' : restaurant.rating_average === 2 ? '★★☆☆☆' : restaurant.rating_average === 3 ? '★★★☆☆' : restaurant.rating_average === 4 ? '★★★★☆' : '★★★★★'}
-                </Text>
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <View style={styles.container}>
+          <Text style={styles.title}>NEARBY RESTAURANTS</Text>
+          <View style={styles.filterContainer}>
+            <View style={styles.ratingContainer}>
+              <Text style={styles.ratingText}>Rating</Text>
+              <View style={styles.ratingSelect}>
+                <Picker
+                  style={styles.picker}
+                  selectedValue={selectedRating}
+                  onValueChange={(itemValue, itemIndex) => setSelectedRating(itemValue)}
+                >
+                  <Picker.Item label="--Select--" value="" />
+                  <Picker.Item label="★☆☆☆☆" value="1" />
+                  <Picker.Item label="★★☆☆☆" value="2" />
+                  <Picker.Item label="★★★☆☆" value="3" />
+                  <Picker.Item label="★★★★☆" value="4" />
+                  <Picker.Item label="★★★★★" value="5" />
+                </Picker>
               </View>
-            </TouchableOpacity>
-          ))}
+            </View>
+            <View style={styles.priceContainer}>
+              <Text style={styles.ratingText}>Price</Text>
+              <View style={styles.ratingSelect}>
+                <Picker
+                  style={styles.picker}
+                  selectedValue={selectedPrice}
+                  onValueChange={(itemValue, itemIndex) => setSelectedPrice(itemValue)}
+                >
+                  <Picker.Item label="--Select--" value="" />
+                  <Picker.Item label="$" value="1" />
+                  <Picker.Item label="$$" value="2" />
+                  <Picker.Item label="$$$" value="3" />
+                </Picker>
+              </View>
+            </View>
+          </View>
+          <Text style={styles.title}>RESTAURANTS</Text>
+          <View style={styles.restaurantsContainer}>
+            {filteredByPrice.map((restaurant, index) => (
+              <TouchableOpacity key={index} style={styles.restaurantContainer} onPress={() => handlePress(restaurant)}>
+                <Image style={styles.restaurantImage} source={restaurant.image} />
+                <View>
+                  <Text style={styles.restaurantsText}>{restaurant.name}</Text>
+                  <Text style={styles.restaurantsText}>
+                    {restaurant.price_range === 1 ? '($)' : restaurant.price_range === 2 ? '($$)' : '($$$)'}
+                  </Text>
+                  <Text style={styles.restaurantsText}>
+                    {restaurant.rating_average === 1 ? '★☆☆☆☆' : restaurant.rating_average === 2 ? '★★☆☆☆' : restaurant.rating_average === 3 ? '★★★☆☆' : restaurant.rating_average === 4 ? '★★★★☆' : '★★★★★'}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+      <Navbar navigation={navigation} />
+    </View>
   );
 }
 

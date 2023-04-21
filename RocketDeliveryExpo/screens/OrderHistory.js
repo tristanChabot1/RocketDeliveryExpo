@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Modal, Dimensions
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Header from '../components/Header';
+import Navbar from '../components/Navbar';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faMagnifyingGlassPlus } from '@fortawesome/free-solid-svg-icons/faMagnifyingGlassPlus';
 import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark';
@@ -58,50 +59,51 @@ export default function OrderHistoryScreen({ navigation }) {
 
 
   return (
-    <ScrollView contentContainerStyle={styles.scrollViewContent}>
+    <View style={{flex: 1}}>
       <Header navigation={navigation} />
-      <View style={styles.container}>
-        <Text style={styles.title}>MY ORDERS</Text>
-        <View style={styles.tableContainer}>
-          <View style={styles.tableHeader}>
-            <Text style={styles.whiteText}>ORDER</Text>
-            <Text style={styles.whiteText}>STATUS</Text>
-            <Text style={styles.whiteText}>VIEW</Text>
-          </View>
-          <View style={styles.tableBody}>
-            {orders.map((order, index) => (
-              <View key={index} style={styles.orderContainer}>
-                <Text style={{width: "44%", paddingLeft: "3%"}}>{order.restaurant_name}</Text>
-                <Text style={{width: "40%"}}>{order.status}</Text>
-                <TouchableOpacity onPress={() => ToggleView(order)}>
-                  <FontAwesomeIcon icon={faMagnifyingGlassPlus}/>
-                </TouchableOpacity>
-              </View>
-            ))}
-          </View>
-        </View>
-        <Modal transparent={true} visible={orderState.modalVisible} onRequestClose={ToggleView}>
-          <View style={{ backgroundColor: 'rgba(0, 0, 0, 0.7)', flex: 1 }}>
-            <View style={[styles.modalContainer, {top: modalTopMeasure}]}>
-              <View style={styles.modalTopContainer}>
-                <View style={{paddingLeft: 10}}>
-                  <Text style={styles.modalTitle}>{orderState.restaurantName}</Text>
-                  <Text style={styles.whiteText}>{`Order Date: ${orderState.orderDate}`}</Text>
-                  <Text style={styles.whiteText}>{`Status: ${orderState.status}`}</Text>
-                  <Text style={styles.whiteText}>{`Courier: ${orderState.courier}`}</Text>
-                  {/* <Text style={styles.modalTitle}>{orderState.products[0]}</Text> */}
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <View style={styles.container}>
+          <Text style={styles.title}>MY ORDERS</Text>
+          <View style={styles.tableContainer}>
+            <View style={styles.tableHeader}>
+              <Text style={styles.whiteText}>ORDER</Text>
+              <Text style={styles.whiteText}>STATUS</Text>
+              <Text style={styles.whiteText}>VIEW</Text>
+            </View>
+            <View style={styles.tableBody}>
+              {orders.map((order, index) => (
+                <View key={index} style={styles.orderContainer}>
+                  <Text style={{width: "44%", paddingLeft: "3%"}}>{order.restaurant_name}</Text>
+                  <Text style={{width: "40%"}}>{order.status}</Text>
+                  <TouchableOpacity onPress={() => ToggleView(order)}>
+                    <FontAwesomeIcon icon={faMagnifyingGlassPlus}/>
+                  </TouchableOpacity>
                 </View>
-                <TouchableOpacity onPress={ToggleView} style={{justifyContent: "center"}}>
-                  <FontAwesomeIcon icon={faXmark} size={32} style={{color: "#609475"}}/>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.modalBodyContainer}>
+              ))}
+            </View>
+          </View>
+          <Modal transparent={true} visible={orderState.modalVisible} onRequestClose={ToggleView}>
+            <View style={{ backgroundColor: 'rgba(0, 0, 0, 0.7)', flex: 1 }}>
+              <View style={[styles.modalContainer, {top: modalTopMeasure}]}>
+                <View style={styles.modalTopContainer}>
+                  <View style={{paddingLeft: 10}}>
+                    <Text style={styles.modalTitle}>{orderState.restaurantName}</Text>
+                    <Text style={styles.whiteText}>{`Order Date: ${orderState.orderDate}`}</Text>
+                    <Text style={styles.whiteText}>{`Status: ${orderState.status}`}</Text>
+                    <Text style={styles.whiteText}>{`Courier: ${orderState.courier}`}</Text>
+                    {/* <Text style={styles.modalTitle}>{orderState.products[0]}</Text> */}
+                  </View>
+                  <TouchableOpacity onPress={ToggleView} style={{justifyContent: "center"}}>
+                    <FontAwesomeIcon icon={faXmark} size={32} style={{color: "#609475"}}/>
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.modalBodyContainer}>
                 <View>
                   {orderState.products.map((product, index) => (
                       <View key={index} style={styles.modalOrderContainer}>
                         <Text style={{width: "60%"}}>{product.product_name}</Text>
-                        <Text style={{width: "30%"}}>{`x${product.quantity}`}</Text>
-                        <Text>{`$ ${product.unit_cost}`}</Text>
+                        <Text style={{width: "25%"}}>{`x${product.quantity}`}</Text>
+                        <Text>{`$ ${parseFloat(product.unit_cost).toFixed(2)}`}</Text>
                       </View>
                     ))}
                 </View>
@@ -109,12 +111,14 @@ export default function OrderHistoryScreen({ navigation }) {
                   <Text style={{fontWeight: "bold"}}>Total</Text>
                   <Text>{`: $ ${orderState.total_cost}`}</Text>
                 </View>
+                </View>
               </View>
             </View>
-          </View>
-        </Modal>
-      </View>
-    </ScrollView>
+          </Modal>
+        </View>
+      </ScrollView>
+      <Navbar navigation={navigation} />
+    </View>
   );
 }
 

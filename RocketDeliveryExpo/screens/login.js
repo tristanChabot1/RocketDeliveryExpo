@@ -98,7 +98,8 @@ const styles = StyleSheet.create({
   welcome:{
     alignSelf: "flex-start",
     fontSize: 20,
-    fontWeight: "bold"
+    fontWeight: "bold",
+    fontFamily: "Oswald"
   },
   login:{
     alignSelf: "flex-start",
