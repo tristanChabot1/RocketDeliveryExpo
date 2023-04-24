@@ -6,6 +6,8 @@ import RestaurantScreen from './screens/Restaurant';
 import MenuScreen from './screens/Menu';
 import OrderHistoryScreen from './screens/OrderHistory';
 import CourierHomeScreen from './screens/CourierHome';
+import AccountScreen from './screens/Account';
+
 
 const Stack = createStackNavigator();
 
@@ -41,6 +43,11 @@ export default function Navigation() {
         <Stack.Screen
           name="CourierHomeHistory"
           component={CourierHomeScreen}
+          options={{ header: null }}
+        />
+        <Stack.Screen
+          name="AccountHistory"
+          component={AccountScreen}
           options={{ header: null }}
         />
       </Stack.Navigator>

@@ -31,7 +31,11 @@ export default function RestaurantScreen({ navigation }) {
   useEffect(() => {
     const getRestaurants = async () => {
       try {
-        const response = await axios.get(`${Ngrok_URL}/restaurants`);
+        const response = await axios.get(`${Ngrok_URL}/api/restaurants`, {
+          headers: {
+            Accept: "application/json"
+          }
+        });
         if (response.status === 200) {
           const restaurants = response.data.map(({ id, address_id, active, email, name, phone, price_range, user_id, rating_average }, index) => {
             return {
