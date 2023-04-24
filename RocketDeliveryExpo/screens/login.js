@@ -40,9 +40,18 @@ export default function LoginScreen({ navigation }) {
         await AsyncStorage.setItem('isLoggedIn', 'true');
         await AsyncStorage.setItem('customerID', `${response.data.customer_id}`);
         await AsyncStorage.setItem('courierID', `${response.data.courier_id}`);
-        const customerID = parseInt(await AsyncStorage.getItem('customerID'))
-        const courierID = parseInt(await AsyncStorage.getItem('courierID'))    
-        navigation.navigate('Selection', {customerID: customerID, courierID: courierID});
+        const customerID = parseInt(await AsyncStorage.getItem('customerID'));
+        const courierID = parseInt(await AsyncStorage.getItem('courierID'));
+        if (!isNaN(customerID) && !isNaN(courierID)) {
+          navigation.navigate('Selection', {customerID: customerID, courierID: courierID});
+        }
+        else if (!isNaN(customerID) && isNaN(courierID)) {
+          navigation.navigate('Restaurant');
+        }
+        else if (isNaN(customerID) && !isNaN(courierID)) {
+          navigation.navigate('CourierHome');
+        }
+        
       } else {
         setShow(true);
       }

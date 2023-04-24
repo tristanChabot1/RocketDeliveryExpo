@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity, Modal, Button, Dimensions } from 'react-native';
+import Checkbox from 'expo-checkbox';
 import axios from 'axios';
 import {Ngrok_URL} from "@env";
 import Header from '../components/Header';
@@ -23,6 +24,8 @@ export default function MenuScreen({ navigation, route }) {
   const [products, setProducts] = useState([]);
   const [orderStatusText, setOrderStatusText] = useState("CONFIRM ORDER");
   const [orderStatus, setOrderStatus] = useState("undefined");
+  const [emailIsChecked, setEmailChecked] = useState(false);
+  const [phoneIsChecked, setPhoneChecked] = useState(false);
 
   const { height } = Dimensions.get('window');
   const modalTopMeasure = height/2 - 150
@@ -206,6 +209,19 @@ export default function MenuScreen({ navigation, route }) {
                   <Text>{`: $ ${orderTotal}`}</Text>
                 </View>
                 <View style={[styles.confirmOrderButton, {display: handleMessageConfirmationDisplay("button")}]}>
+                  <View>
+                    <Text style={{textAlign: "center", marginBottom: 10}}>Would you like to receive your order confirmation by email and/or text?</Text>
+                    <View style={styles.checkContainer}>
+                      <View style={styles.singleCheckContainer}>
+                        <Checkbox style={styles.checkbox} value={emailIsChecked} onValueChange={setEmailChecked} />
+                        <Text style={{marginLeft: 5}}>By Email</Text>
+                      </View>
+                      <View style={styles.singleCheckContainer}>
+                        <Checkbox style={styles.checkbox} value={phoneIsChecked} onValueChange={setPhoneChecked} />
+                        <Text style={{marginLeft: 5}}>By Phone</Text>
+                      </View>
+                    </View>
+                  </View>
                   <Button title={orderStatusText} color={"#DA583B"} onPress={handlePostOrder} />
                 </View>
                 <View style={[styles.successContainer, {display: handleMessageConfirmationDisplay("success")}]}>
@@ -388,6 +404,14 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     marginTop: 10,
     marginHorizontal: 20,
+  },
+  checkContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginBottom: 15,
+  },
+  singleCheckContainer: {
+    flexDirection: "row"
   },
   confirmOrderButton: {
     marginHorizontal: 20,
