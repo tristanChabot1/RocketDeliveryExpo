@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   restaurantContainer: {
-    width: '48%',
+    width: '47%',
     height: 180,
     backgroundColor: 'white',
     borderRadius: 5,
@@ -215,9 +215,10 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
 
     elevation: 5,
+    overflow: 'hidden',
   },
   restaurantImage: {
-    height: "57.5%",
+    flex: 1,
     aspectRatio: 3601 / 2401,
     resizeMode: "contain",
     borderTopLeftRadius: 5,
