@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity, Modal, Button, Dimensions } from 'react-native';
 import axios from 'axios';
+import {Ngrok_URL} from "@env";
 import Header from '../components/Header';
 import Navbar from '../components/Navbar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -30,7 +31,7 @@ export default function MenuScreen({ navigation, route }) {
   useEffect(() => {
     const getRestaurants = async () => {
       try {
-        const response = await axios.get(`https://1fdb-142-182-79-148.ngrok-free.app/api/products?restaurant=${restaurant.id}`);
+        const response = await axios.get(`${Ngrok_URL}/api/products?restaurant=${restaurant.id}`);
         if (response.status === 200) {
           setProducts(response.data.map(product => ({ ...product, quantity: 0 })));
         } else {

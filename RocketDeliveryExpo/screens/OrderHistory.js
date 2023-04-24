@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Modal, Dimensions, Button } from 'react-native';
 import axios from 'axios';
+import {Ngrok_URL} from "@env";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Header from '../components/Header';
 import Navbar from '../components/Navbar';
@@ -40,7 +41,7 @@ export default function OrderHistoryScreen({ navigation }) {
     const getOrderHistory = async () => {
       const customerID = parseInt(await AsyncStorage.getItem('customerID'))
       try {
-        const response = await axios.get(`https://1fdb-142-182-79-148.ngrok-free.app/api/orders?type=customer&id=${customerID}`);
+        const response = await axios.get(`${Ngrok_URL}/api/orders?type=customer&id=${customerID}`);
         if (response) {
           setOrders(response.data);
         }

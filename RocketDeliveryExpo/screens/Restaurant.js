@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
+import {Ngrok_URL} from "@env";
 import Header from '../components/Header';
 import Navbar from '../components/Navbar';
 
@@ -30,7 +31,7 @@ export default function RestaurantScreen({ navigation }) {
   useEffect(() => {
     const getRestaurants = async () => {
       try {
-        const response = await axios.get('https://1fdb-142-182-79-148.ngrok-free.app/restaurants');
+        const response = await axios.get(`${Ngrok_URL}/restaurants`);
         if (response.status === 200) {
           const restaurants = response.data.map(({ id, address_id, active, email, name, phone, price_range, user_id, rating_average }, index) => {
             return {

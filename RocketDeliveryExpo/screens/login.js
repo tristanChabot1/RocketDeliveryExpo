@@ -4,6 +4,8 @@ import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
+import {Ngrok_URL} from "@env";
+
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -25,7 +27,7 @@ export default function LoginScreen({ navigation }) {
   const handleLogin = async () => {
     try {
       const response = await axios.post(
-        'https://1fdb-142-182-79-148.ngrok-free.app/api/login',
+        `${Ngrok_URL}/api/login`,
         { user: { email: email, password: password } },
         { headers: { 'Content-Type': 'application/json',
       'Accept': 'application/json' } }
