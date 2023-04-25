@@ -18,69 +18,56 @@ export default function AccountScreen({ navigation }) {
   const [phone, setPhone] = useState('');
   const [show, setShow] = useState(false);
 
+  const getInfo = async (id, type) => {
+    try {
+      console.log(`ID: ${id}`)
+      console.log(`Type: ${type}`)
+      const response = await axios.get(`${Ngrok_URL}/api/account/${id}?type=${type}`, {
+        headers: {
+          Accept: "application/json"
+        }
+      });
+      if (response.status === 200) {
+        setEmail(response.data.email || "undefined");
+        setPhone(response.data.phone || "undefined");
+        setPrimaryEmail(response.data.primary_email)
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useFocusEffect(
     React.useCallback(() => {
-    const checkLoginState = async () => {
+    const getCustomerIDOrCourierID = async () => {
       const loggedInType = await AsyncStorage.getItem("loggedInType");
       if (loggedInType === "Customer") {
         const id = await AsyncStorage.getItem("customerID");
         setID(parseInt(id))
-        const getCustomerInfo = async () => {
-          try {
-            const response = await axios.get(`${Ngrok_URL}/api/customers?customer=${id}`, {
-              headers: {
-                Accept: "application/json"
-              }
-            });
-            if (response.status === 200) {
-              setEmail(response.data.email || "undefined");
-              setPhone(response.data.phone || "undefined");
-              setPrimaryEmail(response.data.primary_email)
-            }
-          } catch (error) {
-            console.log(error);
-          }
-        };
-        getCustomerInfo();
+        getInfo(parseInt(id), "Customer");
       }
-      else {
+      if (loggedInType === "Courier") {
         const id = await AsyncStorage.getItem("courierID");
         setID(parseInt(id))
-        const getCourierInfo = async () => {
-          try {
-            const response = await axios.get(`${Ngrok_URL}/api/couriers?courier=${id}`, {
-              headers: {
-                Accept: "application/json"
-              }
-            });
-            if (response.status === 200) {
-              setEmail(response.data.email || "undefined");
-              setPhone(response.data.phone || "undefined");
-              setPrimaryEmail(response.data.primary_email)
-            }
-          } catch (error) {
-            console.log(error);
-          }
-        };
-        getCourierInfo();
+        getInfo(parseInt(id), "Courier");
       }
       setCustomerType(loggedInType);
     };
 
     
   
-    checkLoginState();
+    getCustomerIDOrCourierID();
     }, [])
   );
 
   const handleUpdate = async () => {
     try {
-      const response = await axios.patch(
-        `${Ngrok_URL}/api/${customerType.toLocaleLowerCase()}s/${ID}`,
-        { person: {
+      const response = await axios.post(
+        `${Ngrok_URL}/api/account/${ID}?type=${customerType}`,
+        {
           email: email !== "undefined" ? email : null,
           phone: phone !== "undefined" ? phone : null
-        } },
+        },
         { headers: { 'Content-Type': 'application/json',
         'Accept': 'application/json' } }
       );
