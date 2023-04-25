@@ -3,85 +3,122 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, ScrollView 
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import Header from '../components/Header';
+import Navbar from '../components/Navbar';
+
 
 import {Ngrok_URL} from "@env";
 
 
 export default function AccountScreen({ navigation }) {
-//   const [email, setEmail] = useState('');
-//   const [password, setPassword] = useState('');
-//   const [show, setShow] = useState(false);
+  const [customerType, setCustomerType] = useState("");
+  const [ID, setID] = useState(0);
+  const [primaryEmail, setPrimaryEmail] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [show, setShow] = useState(false);
 
-//   useFocusEffect(
-//     React.useCallback(() => {
-//     const checkLoginState = async () => {
-//     const isLoggedIn = await AsyncStorage.getItem('isLoggedIn');
-//     const customerID = parseInt(await AsyncStorage.getItem('customerID'))
-//     const courierID = parseInt(await AsyncStorage.getItem('courierID'))
-//     if (isLoggedIn) {
-//     navigation.navigate('Selection', {customerID: customerID, courierID: courierID});
-//     }
-//     };
-//     checkLoginState();
-//     }, [])
-//   );
+  useFocusEffect(
+    React.useCallback(() => {
+    const checkLoginState = async () => {
+      const loggedInType = await AsyncStorage.getItem("loggedInType");
+      if (loggedInType === "Customer") {
+        const id = await AsyncStorage.getItem("customerID");
+        setID(parseInt(id))
+        const getCustomerInfo = async () => {
+          try {
+            console.log(ID)
+            const response = await axios.get(`${Ngrok_URL}/api/customers?customer=${id}`, {
+              headers: {
+                Accept: "application/json"
+              }
+            });
+            if (response.status === 200) {
+              console.log(response.data)
+              setEmail(response.data.email || "undefined");
+              setPhone(response.data.phone || "undefined");
+              setPrimaryEmail(response.data.primary_email)
+            }
+          } catch (error) {
+            console.log(error);
+          }
+        };
+        getCustomerInfo();
+      }
+      else {
+        const id = await AsyncStorage.getItem("courierID");
+        setID(parseInt(id))
+      }
+      setCustomerType(loggedInType);
+    };
+
     
-//   const handleLogin = async () => {
-//     try {
-//       const response = await axios.post(
-//         `${Ngrok_URL}/api/login`,
-//         { user: { email: email, password: password } },
-//         { headers: { 'Content-Type': 'application/json',
-//       'Accept': 'application/json' } }
-//       );
   
-//       if (response.data.success) {
-//         setShow(false);
-//         await AsyncStorage.setItem('isLoggedIn', 'true');
-//         await AsyncStorage.setItem('customerID', `${response.data.customer_id}`);
-//         await AsyncStorage.setItem('courierID', `${response.data.courier_id}`);
-//         const customerID = parseInt(await AsyncStorage.getItem('customerID'))
-//         const courierID = parseInt(await AsyncStorage.getItem('courierID'))    
-//         navigation.navigate('Selection', {customerID: customerID, courierID: courierID});
-//       } else {
-//         setShow(true);
-//       }
-//     } catch (error) {
-//       setShow(true);
-//     }
-//   };
+    checkLoginState();
+    }, [])
+  );
+
+  const handleUpdate = async () => {
+    try {
+      const response = await axios.patch(
+        `${Ngrok_URL}/api/customers/${ID}`,
+        { customer: { 
+          email: email !== "undefined" ? email : null,
+          phone: phone !== "undefined" ? phone : null
+        } },
+        { headers: { 'Content-Type': 'application/json',
+        'Accept': 'application/json' } }
+      );
+  
+      if (response.status === 200) {
+        setShow(false);
+      } else {
+        setShow(true);
+      }
+    } catch (error) {
+      setShow(true);
+    }
+  };
 
   return (
-    <ScrollView
-      contentContainerStyle={styles.scrollViewContent}
-      keyboardShouldPersistTaps="handled"
-    >
-      <Image style={styles.logo} source={require("../assets/Images/AppLogoV2.png")} />
-      <View style={styles.formContainer}>
-        <Text style={[styles.welcome]}>Account</Text>
-        <Text style={styles.login}>Login to begin</Text>
-        <Text style={styles.label}>Email</Text>
-        {/* <TextInput
-          style={styles.input}
-          placeholder="Enter your primary email here"
-          onChangeText={setEmail}
-          value={email}
-          autoCapitalize="none"
-        />
-        <Text style={styles.label}>Password</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="*********"
-          onChangeText={setPassword}
-          value={password}
-          secureTextEntry
-        />
-        <Text style={[styles.errorMessage, { display: show ? "flex" : "none" }]}>Login failed. Try again!</Text>
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>LOG IN</Text>
-        </TouchableOpacity> */}
-      </View>
-    </ScrollView>
+    <View style={{flex: 1}}>
+      <ScrollView
+        contentContainerStyle={styles.scrollViewContent}
+        keyboardShouldPersistTaps="handled"
+      >
+        <Header navigation={navigation} />
+        <View style={styles.formContainer}>
+          <Text style={[styles.welcome]}>MY ACCOUNT</Text>
+          <Text style={styles.login}>{`Logged In As: ${customerType}`}</Text>
+          <Text style={styles.label}>Primary Email (Read Only)</Text>
+          <TextInput
+            style={styles.input}
+            placeholder={primaryEmail}
+            editable = {false}
+          />
+          <Text style={styles.smallText}>Email used to login to the application.</Text>
+          <Text style={styles.label}>{customerType} Email</Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={setEmail}
+            value={email}
+          />
+          <Text style={styles.smallText}>Email used for you Customer account.</Text>
+          <Text style={styles.label}>{customerType} Phone</Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={setPhone}
+            value={phone}
+          />
+          <Text style={styles.smallText}>Phone number for you Customer account.</Text>
+          <Text style={[styles.errorMessage, { display: show ? "flex" : "none" }]}>Update failed. Try again!</Text>
+          <TouchableOpacity style={styles.button} onPress={handleUpdate}>
+            <Text style={styles.buttonText}>UPDATE ACCOUNT</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+      <Navbar navigation={navigation} />
+    </View>
   );
 };
 
@@ -94,12 +131,7 @@ const styles = StyleSheet.create({
   formContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    padding: "5%",
     width: "80%",
-    backgroundColor: "white",
-    borderRadius: 5,
-    borderWidth: 2,
-    borderColor: '#222126',
   },
   welcome:{
     alignSelf: "flex-start",
@@ -114,13 +146,18 @@ const styles = StyleSheet.create({
   label:{
     alignSelf: "flex-start",
   },
+  smallText:{
+    alignSelf: "flex-start",
+    fontSize: 10,
+    color: "rgb(100, 100, 100)",
+    marginBottom: 10,
+  },
   input: {
     width: '100%',
     padding: 5,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
-    marginBottom: 10,
   },
   button: {
     backgroundColor: '#DA583B',
@@ -136,11 +173,5 @@ const styles = StyleSheet.create({
   errorMessage: {
     color: "red",
     textAlign: "center",
-  },
-  logo: {
-    resizeMode: "contain",
-    width: "80%",
-    margin: "0%",
-    padding: "0%"
   },
 });

@@ -126,7 +126,7 @@ export default function MenuScreen({ navigation, route }) {
       }
     };
     
-    fetch('https://1fdb-142-182-79-148.ngrok-free.app/api/orders', {
+    fetch(`${Ngrok_URL}/api/orders`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -146,6 +146,8 @@ export default function MenuScreen({ navigation, route }) {
       setOrderStatus("success");
     })
     .catch(error => {
+      setOrderStatusText("CONFIRM ORDER");
+      console.log(error);
       setOrderStatus("error");
     });
   }

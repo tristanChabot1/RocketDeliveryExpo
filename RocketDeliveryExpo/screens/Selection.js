@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, ScrollView } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faUser } from '@fortawesome/free-solid-svg-icons/faUser';
 import { faCar } from '@fortawesome/free-solid-svg-icons/faCar';
@@ -7,12 +8,14 @@ import { faCar } from '@fortawesome/free-solid-svg-icons/faCar';
 
 export default function SelectionScreen({ navigation, route }) {
 
-  const handleCustomer = () => {
-    navigation.replace("Restaurant")
+  const handleCustomer = async() => {
+    await AsyncStorage.setItem('loggedInType', 'Customer');
+    navigation.navigate("Restaurant", {customerID: route.params.customerID})
   }
 
-  const handleCourier = () => {
-    navigation.replace("CourierHome")
+  const handleCourier = async() => {
+    await AsyncStorage.setItem('loggedInType', 'Courier');
+    navigation.navigate("CourierHome", {courierID: route.params.courierID})
   }
     
 
