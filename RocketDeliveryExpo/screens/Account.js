@@ -27,14 +27,12 @@ export default function AccountScreen({ navigation }) {
         setID(parseInt(id))
         const getCustomerInfo = async () => {
           try {
-            console.log(ID)
             const response = await axios.get(`${Ngrok_URL}/api/customers?customer=${id}`, {
               headers: {
                 Accept: "application/json"
               }
             });
             if (response.status === 200) {
-              console.log(response.data)
               setEmail(response.data.email || "undefined");
               setPhone(response.data.phone || "undefined");
               setPrimaryEmail(response.data.primary_email)
@@ -48,6 +46,23 @@ export default function AccountScreen({ navigation }) {
       else {
         const id = await AsyncStorage.getItem("courierID");
         setID(parseInt(id))
+        const getCourierInfo = async () => {
+          try {
+            const response = await axios.get(`${Ngrok_URL}/api/couriers?courier=${id}`, {
+              headers: {
+                Accept: "application/json"
+              }
+            });
+            if (response.status === 200) {
+              setEmail(response.data.email || "undefined");
+              setPhone(response.data.phone || "undefined");
+              setPrimaryEmail(response.data.primary_email)
+            }
+          } catch (error) {
+            console.log(error);
+          }
+        };
+        getCourierInfo();
       }
       setCustomerType(loggedInType);
     };
@@ -61,8 +76,8 @@ export default function AccountScreen({ navigation }) {
   const handleUpdate = async () => {
     try {
       const response = await axios.patch(
-        `${Ngrok_URL}/api/customers/${ID}`,
-        { customer: { 
+        `${Ngrok_URL}/api/${customerType.toLocaleLowerCase()}s/${ID}`,
+        { person: {
           email: email !== "undefined" ? email : null,
           phone: phone !== "undefined" ? phone : null
         } },
