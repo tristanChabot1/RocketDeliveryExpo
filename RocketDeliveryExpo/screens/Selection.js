@@ -15,7 +15,7 @@ export default function SelectionScreen({ navigation, route }) {
 
   const handleCourier = async() => {
     await AsyncStorage.setItem('loggedInType', 'Courier');
-    navigation.navigate("CourierHome", {courierID: route.params.courierID})
+    navigation.navigate("Deliveries", {courierID: route.params.courierID})
   }
     
 

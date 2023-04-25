@@ -5,7 +5,6 @@ import SelectionScreen from './screens/Selection';
 import RestaurantScreen from './screens/Restaurant';
 import MenuScreen from './screens/Menu';
 import OrderHistoryScreen from './screens/OrderHistory';
-import CourierHomeScreen from './screens/CourierHome';
 import AccountScreen from './screens/Account';
 import DeliveriesScreen from './screens/Deliveries';
 
@@ -39,11 +38,6 @@ export default function Navigation() {
         <Stack.Screen
           name="OrderHistory"
           component={OrderHistoryScreen}
-          options={{ header: null }}
-        />
-        <Stack.Screen
-          name="CourierHome"
-          component={CourierHomeScreen}
           options={{ header: null }}
         />
         <Stack.Screen
