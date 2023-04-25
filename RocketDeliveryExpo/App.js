@@ -8,6 +8,7 @@ import MenuScreen from './screens/Menu';
 import OrderHistoryScreen from './screens/OrderHistory';
 import CourierHomeScreen from './screens/CourierHome';
 import AccountScreen from './screens/Account';
+import DeliveriesScreen from './screens/Deliveries';
 import { useFonts } from 'expo-font';
 
 const Stack = createStackNavigator();
@@ -33,6 +34,7 @@ export default function App()  {
         <Stack.Screen name="OrderHistory" component={OrderHistoryScreen} options={{headerShown: false}} />
         <Stack.Screen name="CourierHome" component={CourierHomeScreen} options={{headerShown: false}} />
         <Stack.Screen name="Account" component={AccountScreen} options={{headerShown: false}} />
+        <Stack.Screen name="Deliveries" component={DeliveriesScreen} options={{headerShown: false}} />
       </Stack.Navigator>
     </NavigationContainer>
   );

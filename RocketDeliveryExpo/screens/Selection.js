@@ -26,11 +26,11 @@ export default function SelectionScreen({ navigation, route }) {
       <Image style={styles.logo} source={require("../assets/Images/AppLogoV2.png")} />
       <Text style={[styles.title]}>Select Account Type</Text>
       <View style={styles.selectContainer}>
-        <TouchableOpacity onPress={handleCustomer} style={[styles.buttonContainer, {display: isNaN(route.params.customerID) ? "none" : "flex"}]}>
+        <TouchableOpacity onPress={handleCustomer} style={styles.buttonContainer}>
           <FontAwesomeIcon icon={faUser} size={95} color="#DA583B" />
           <Text style={styles.selectText}>Customer</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleCourier} style={[styles.buttonContainer, {display: isNaN(route.params.courierID) ? "none" : "flex"}]}>
+        <TouchableOpacity onPress={handleCourier} style={styles.buttonContainer}>
           <FontAwesomeIcon icon={faCar} size={95} />
           <Text style={styles.selectText}>Courier</Text>
         </TouchableOpacity>

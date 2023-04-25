@@ -7,6 +7,7 @@ import MenuScreen from './screens/Menu';
 import OrderHistoryScreen from './screens/OrderHistory';
 import CourierHomeScreen from './screens/CourierHome';
 import AccountScreen from './screens/Account';
+import DeliveriesScreen from './screens/Deliveries';
 
 
 const Stack = createStackNavigator();
@@ -41,13 +42,18 @@ export default function Navigation() {
           options={{ header: null }}
         />
         <Stack.Screen
-          name="CourierHomeHistory"
+          name="CourierHome"
           component={CourierHomeScreen}
           options={{ header: null }}
         />
         <Stack.Screen
-          name="AccountHistory"
+          name="Account"
           component={AccountScreen}
+          options={{ header: null }}
+        />
+        <Stack.Screen
+          name="Deliveries"
+          component={DeliveriesScreen}
           options={{ header: null }}
         />
       </Stack.Navigator>
