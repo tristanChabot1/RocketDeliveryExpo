@@ -11,47 +11,78 @@ import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark';
 
 
 export default function DeliveriesScreen({ navigation }) {
-  const [orders, setOrders] = useState([]);
+  const [deliveries, setDeliveries] = useState([]);
   const [orderState, setOrderState] = useState({
     modalVisible: false,
+    status: "",
+    deliveryAddress: "",
     restaurantName: "",
     orderDate: "",
-    status: "",
-    courier: "",
     products: [],
-    total_cost: 0
+    totalCost: 0
   });
 
   const { height } = Dimensions.get('window');
   const modalTopMeasure = height/2 - 150
 
-  const ToggleView = (order) => {
+  const ToggleView = (delivery) => {
     setOrderState({
       modalVisible: !orderState.modalVisible,
-      restaurantName: order.restaurant_name,
-      orderDate: order.date?.slice(0, 10),
-      status: order.status,
-      courier: "None found yet",
-      products: order.products || [],
-      total_cost: order.total_cost
+      status: delivery.status,
+      deliveryAddress: delivery.customer_address,
+      restaurantName: delivery.restaurant_name,
+      orderDate: delivery.date?.slice(0, 10),
+      products: delivery.products || [],
+      totalCost: delivery.total_cost
     });
   };
 
-//   useEffect(() => {
-//     const getOrderHistory = async () => {
-//       const customerID = parseInt(await AsyncStorage.getItem('customerID'))
-//       try {
-//         const response = await axios.get(`${Ngrok_URL}/api/orders?type=customer&id=${customerID}`);
-//         if (response) {
-//           setOrders(response.data);
-//         }
-//       } catch (error) {
-//         console.log(error);
-//       }
-//     };
+  const handleStatus = async (id, status) => {
+    let newStatus;
+    if (status === "pending") {
+      newStatus = "in progress";
+    } else if (status === "in progress") {
+      newStatus = "delivered";
+    } else {
+      return;
+    }
   
-//     getOrderHistory();
-//   }, []);
+    try {
+      await axios.post(`${Ngrok_URL}/api/order/${id}/status`, {
+        status: newStatus
+      });
+      const updatedDeliveries = deliveries.map(delivery => {
+        if (delivery.id === id) {
+          return { ...delivery, status: newStatus };
+        } else {
+          return delivery;
+        }
+      });
+      setDeliveries(updatedDeliveries);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    const getOrderHistory = async () => {
+      const courierID = parseInt(await AsyncStorage.getItem('courierID'))
+      try {
+        const response = await axios.get(`${Ngrok_URL}/api/orders?type=courier&id=${courierID}`);
+        if (response) {
+          const modifiedData = response.data.map(order => {
+            const customerAddress = order.customer_address.split(',')[0].trim();
+            return { ...order, customer_address: customerAddress };
+          });
+          setDeliveries(modifiedData);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  
+    getOrderHistory();
+  }, []);
 
 
   return (
@@ -62,38 +93,46 @@ export default function DeliveriesScreen({ navigation }) {
           <Text style={styles.title}>MY DELIVERIES</Text>
           <View style={styles.tableContainer}>
             <View style={styles.tableHeader}>
-              <Text style={styles.whiteText}>ORDER</Text>
+              <Text style={styles.whiteText}>ORDER ID</Text>
+              <Text style={styles.whiteText}>ADDRESS</Text>
               <Text style={styles.whiteText}>STATUS</Text>
               <Text style={styles.whiteText}>VIEW</Text>
             </View>
-            {/* <View style={styles.tableBody}>
-              {orders.map((order, index) => (
+            <View>
+              {deliveries.map((delivery, index) => (
                 <View key={index} style={styles.orderContainer}>
-                  <Text style={{width: "45.5%", paddingLeft: "3%", fontFamily: "Oswald-Regular"}}>{order.restaurant_name}</Text>
-                  <Text style={{width: "37.5%", fontFamily: "Oswald-Regular"}}>{order.status}</Text>
-                  <TouchableOpacity onPress={() => ToggleView(order)}>
+                  <Text style={styles.IdCell}>{delivery.id}</Text>
+                  <Text style={styles.addressCell}>{delivery.customer_address}</Text>
+                  <TouchableOpacity onPress={() => handleStatus(delivery.id, delivery.status)} style={[styles.statusCell, {backgroundColor: delivery.status === "pending" ? "#851919" : delivery.status === "in progress" ? "#db7058" : "#609475"}]}>
+                    <Text style={{color: "white", fontFamily: "Oswald-Regular", width: "100%", textAlign: "center"}}>{delivery.status}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => ToggleView(delivery)} style={{marginLeft: "9%", marginTop: 10}}>
                     <FontAwesomeIcon icon={faMagnifyingGlassPlus}/>
                   </TouchableOpacity>
                 </View>
               ))}
-            </View> */}
+            </View>
           </View>
-          {/* <Modal transparent={true} visible={orderState.modalVisible} onRequestClose={ToggleView}>
+          <Modal transparent={true} visible={orderState.modalVisible} onRequestClose={ToggleView}>
             <View style={{ backgroundColor: 'rgba(0, 0, 0, 0.7)', flex: 1 }}>
               <View style={[styles.modalContainer, {top: modalTopMeasure}]}>
                 <View style={styles.modalTopContainer}>
                   <View style={{paddingLeft: 10}}>
-                    <Text style={styles.modalTitle}>{orderState.restaurantName}</Text>
-                    <Text style={styles.whiteText}>{`Order Date: ${orderState.orderDate}`}</Text>
+                    <Text style={styles.modalTitle}>DELIVERY DETAILS</Text>
                     <Text style={styles.whiteText}>{`Status: ${orderState.status?.toUpperCase()}`}</Text>
-                    <Text style={styles.whiteText}>{`Courier: ${orderState.courier}`}</Text>
                   </View>
                   <TouchableOpacity onPress={ToggleView} style={{justifyContent: "center"}}>
                     <FontAwesomeIcon icon={faXmark} size={32} style={{color: "#609475"}}/>
                   </TouchableOpacity>
                 </View>
                 <View style={styles.modalBodyContainer}>
+                  <View style={styles.modalTopInfo}>
+                    <Text>{`Delivery Address: ${orderState.deliveryAddress}`}</Text>
+                    <Text>Restaurant: {orderState.restaurantName}</Text>
+                    <Text>Order Date: {orderState.orderDate}</Text>
+                  </View>
                   <View>
+                    <Text style={{marginLeft: 20, fontFamily: "Oswald-SemiBold"}}>Order Details:</Text>
                     {orderState.products.map((product, index) => (
                       <View key={index} style={styles.modalOrderContainer}>
                         <Text style={{width: "55%"}}>{product.product_name}</Text>
@@ -104,12 +143,12 @@ export default function DeliveriesScreen({ navigation }) {
                   </View>
                   <View style={styles.orderTotalContainer}>
                     <Text style={{fontWeight: "bold"}}>Total</Text>
-                    <Text>{`: $ ${orderState.total_cost}`}</Text>
+                    <Text>{`: $ ${orderState.totalCost}`}</Text>
                   </View>
                 </View>
               </View>
             </View>
-          </Modal> */}
+          </Modal>
         </View>
       </ScrollView>
       <Navbar navigation={navigation} />
@@ -150,7 +189,27 @@ const styles = StyleSheet.create({
   },
   orderContainer: {
     flexDirection: 'row',
-    marginVertical: 5
+    marginVertical: 5,
+  },
+  IdCell: {
+    width: "24%",
+    marginLeft: "1.5%",
+    fontFamily: "Oswald-Regular",
+    textAlign: "center",
+  },
+  addressCell: {
+    width: "27%",
+    marginLeft: "2%",
+    fontFamily: "Oswald-Regular",
+    textAlign: "center",
+  },
+  statusCell: {
+    width: "22%",
+    flexWrap: 'wrap',
+    alignSelf: 'flex-start',
+    padding: 5,
+    marginHorizontal: 5,
+    borderRadius: 5
   },
   modalContainer: {
     backgroundColor: "white",
@@ -181,6 +240,9 @@ const styles = StyleSheet.create({
     borderColor: "#dce0dd",
     borderBottomStartRadius: 5,
     borderBottomEndRadius: 5,
+  },
+  modalTopInfo: {
+    margin: 20,
   },
   modalOrderContainer: {
     flexDirection: "row",
