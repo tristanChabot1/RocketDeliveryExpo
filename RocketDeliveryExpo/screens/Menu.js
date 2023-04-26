@@ -101,6 +101,17 @@ export default function MenuScreen({ navigation, route }) {
     });
   };
 
+  const sendSms = async (name, id) => {
+    const url = `${Ngrok_URL}/api/sms/send_message`;
+    const body = {
+      to: '5817454593',
+      message: `Thank you ${name}! Your order id is: ${id}.`,
+    };
+    const response = await axios.post(url, body);
+    console.log(response.data);
+  };
+
+
   const handlePostOrder = async () => {
     setOrderStatusText("PROCESSING ORDER...");
     const productOrders = [];
@@ -115,6 +126,7 @@ export default function MenuScreen({ navigation, route }) {
         });
       }
     });
+    console.log(productOrders)
 
     const customerID = parseInt(await AsyncStorage.getItem('customerID'))
 
@@ -144,6 +156,11 @@ export default function MenuScreen({ navigation, route }) {
         setOrderStatusText("CONFIRM ORDER");
       }, 2000);
       setOrderStatus("success");
+      
+      if (phoneIsChecked) {
+        sendSms(data.customer_name, data.order_id)
+      }
+
     })
     .catch(error => {
       setOrderStatusText("CONFIRM ORDER");
@@ -200,7 +217,7 @@ export default function MenuScreen({ navigation, route }) {
                   <Text style={{fontWeight: "bold"}}>Order Summary</Text>
                   {Object.keys(orderSummary).map((productName, index) => (
                     <View key={index} style={styles.singleOrderContainer}>
-                      <Text style={{width: "55%"}}>{productName}</Text>
+                      <Text style={{width: "55%"}}>{productName} {orderSummary[productName].cost}</Text>
                       <Text style={{width: "20%", marginRight: "auto"}}>{`x${orderSummary[productName].quantity}`}</Text>
                       <Text>{`$ ${orderSummary[productName].cost}`}</Text>
                     </View>
@@ -224,7 +241,7 @@ export default function MenuScreen({ navigation, route }) {
                       </View>
                     </View>
                   </View>
-                  <Button title={orderStatusText} color={"#DA583B"} onPress={handlePostOrder} />
+                  <Button title={orderStatusText} disabled={orderStatusText === "CONFIRM ORDER" ? false : true} color={"#DA583B"} onPress={handlePostOrder} />
                 </View>
                 <View style={[styles.successContainer, {display: handleMessageConfirmationDisplay("success")}]}>
                   <FontAwesomeIcon icon={faCircleCheck} size={30} style={{color: "#1abc35",}} />

@@ -53,6 +53,16 @@ export default function OrderHistoryScreen({ navigation }) {
     getOrderHistory();
   }, []);
 
+  const sendSms = async () => {
+    const url = `${Ngrok_URL}/api/sms/send_message`;
+    const body = {
+      to: '5817454593', // Replace with the phone number you want to send the message to
+      message: 'Hello from React Native!', // Replace with your message content
+    };
+    const response = await axios.post(url, body);
+    console.log(response.data); // You can handle the response here
+  };
+
 
   return (
     <View style={{flex: 1}}>
@@ -110,6 +120,9 @@ export default function OrderHistoryScreen({ navigation }) {
               </View>
             </View>
           </Modal>
+          <TouchableOpacity onPress={sendSms}>
+            <Text>Send SMS</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
       <Navbar navigation={navigation} />

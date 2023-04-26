@@ -35,8 +35,6 @@ export default function SelectionScreen({ navigation, route }) {
           <Text style={styles.selectText}>Courier</Text>
         </TouchableOpacity>
       </View>
-      <Text>customer_id: {route.params.customerID}</Text>
-      <Text>courier_id: {route.params.courierID}</Text>
     </ScrollView>
   );
 };
