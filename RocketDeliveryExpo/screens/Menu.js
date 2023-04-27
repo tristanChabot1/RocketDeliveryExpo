@@ -7,11 +7,7 @@ import Header from '../components/Header';
 import Navbar from '../components/Navbar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faCirclePlus } from '@fortawesome/free-solid-svg-icons/faCirclePlus';
-import { faCircleMinus } from '@fortawesome/free-solid-svg-icons/faCircleMinus';
-import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark';
-import { faCircleCheck } from '@fortawesome/free-solid-svg-icons/faCircleCheck';
-import { faCircleXmark } from '@fortawesome/free-solid-svg-icons/faCircleXmark';
+import { faCirclePlus, faCircleMinus, faXmark, faCircleCheck, faCircleXmark } from '@fortawesome/free-solid-svg-icons';
 
 
 
@@ -30,15 +26,13 @@ export default function MenuScreen({ navigation, route }) {
   const { height } = Dimensions.get('window');
   const modalTopMeasure = height/2 - 150
 
-
+  // GET all products of restaurant
   useEffect(() => {
     const getRestaurants = async () => {
       try {
         const response = await axios.get(`${Ngrok_URL}/api/products?restaurant=${restaurant.id}`);
         if (response.status === 200) {
           setProducts(response.data.map(product => ({ ...product, quantity: 0 })));
-        } else {
-          // manage case
         }
       } catch (error) {
         console.log(error);
@@ -48,6 +42,7 @@ export default function MenuScreen({ navigation, route }) {
     getRestaurants();
   }, []);
 
+  // checks if there are no products added
   useEffect(() => {
     let flag = true;
     products.forEach(product => {
@@ -107,15 +102,14 @@ export default function MenuScreen({ navigation, route }) {
       to: '5817454593', // this is the receiving phone number
       message: `Thank you ${name}! Your order id is: ${id}.`,
     };
-    const response = await axios.post(url, body);
-    console.log(response.data);
+    await axios.post(url, body);
   };
 
   const sendEmail = async (name, orderID, restaurantName, totalCost) => {
     const url = "https://api.notify.eu/notification/send";
     const body = {
       message: {
-        notificationType: "order_confirmation",
+        notificationType: "order_confirmation", // this is my template's notification's type
         language: "en",
         params: {
           name: name,
@@ -125,7 +119,7 @@ export default function MenuScreen({ navigation, route }) {
         },
         transport: [
           {
-            type: "order_confirmation",
+            type: "order_confirmation", // this is the channel
             from: {
               name: "Rocket F.",
               email: "R0ck3tF00d@outlook.com"
@@ -146,8 +140,7 @@ export default function MenuScreen({ navigation, route }) {
       "X-ClientId": CLIENT_ID,
       "X-SecretKey": SECRET_KEY,
     };
-    const response = await axios.post(url, body, { headers });
-    console.log(response.data);
+    await axios.post(url, body, { headers });
   };
 
 
@@ -155,6 +148,7 @@ export default function MenuScreen({ navigation, route }) {
     setOrderStatusText("PROCESSING ORDER...");
     const productOrders = [];
 
+    // create the array of products
     Object.keys(orderSummary).forEach((productName) => {
       const product = products.find((p) => p.name === productName);
       if (orderSummary[productName].quantity > 0 && product) {
@@ -165,7 +159,6 @@ export default function MenuScreen({ navigation, route }) {
         });
       }
     });
-    console.log(productOrders)
 
     const customerID = parseInt(await AsyncStorage.getItem('customerID'))
 
@@ -206,8 +199,8 @@ export default function MenuScreen({ navigation, route }) {
 
     })
     .catch(error => {
-      setOrderStatusText("CONFIRM ORDER");
       console.log(error);
+      setOrderStatusText("CONFIRM ORDER");
       setOrderStatus("error");
     });
   }

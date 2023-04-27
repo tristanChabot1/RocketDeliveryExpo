@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Modal, Dimensions, Button } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Modal, Dimensions } from 'react-native';
 import axios from 'axios';
-import {Ngrok_URL} from "@env";
+import { Ngrok_URL } from "@env";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Header from '../components/Header';
 import Navbar from '../components/Navbar';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faMagnifyingGlassPlus } from '@fortawesome/free-solid-svg-icons/faMagnifyingGlassPlus';
-import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark';
+import { faMagnifyingGlassPlus, faXmark } from '@fortawesome/free-solid-svg-icons';
 
 
 export default function OrderHistoryScreen({ navigation }) {
@@ -31,12 +30,13 @@ export default function OrderHistoryScreen({ navigation }) {
       restaurantName: order.restaurant_name,
       orderDate: order.date?.slice(0, 10),
       status: order.status,
-      courier: "None found yet",
+      courier: order.courier_name,
       products: order.products || [],
       total_cost: order.total_cost
     });
   };
 
+  // GET order history
   useEffect(() => {
     const getOrderHistory = async () => {
       const customerID = parseInt(await AsyncStorage.getItem('customerID'))
@@ -49,19 +49,8 @@ export default function OrderHistoryScreen({ navigation }) {
         console.log(error);
       }
     };
-  
     getOrderHistory();
   }, []);
-
-  const sendSms = async () => {
-    const url = `${Ngrok_URL}/api/sms/send_message`;
-    const body = {
-      to: '5817454593', // Replace with the phone number you want to send the message to
-      message: 'Hello from React Native!', // Replace with your message content
-    };
-    const response = await axios.post(url, body);
-    console.log(response.data); // You can handle the response here
-  };
 
 
   return (
@@ -120,9 +109,6 @@ export default function OrderHistoryScreen({ navigation }) {
               </View>
             </View>
           </Modal>
-          <TouchableOpacity onPress={sendSms}>
-            <Text>Send SMS</Text>
-          </TouchableOpacity>
         </View>
       </ScrollView>
       <Navbar navigation={navigation} />

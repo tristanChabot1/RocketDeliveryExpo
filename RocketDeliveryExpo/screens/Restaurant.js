@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
-import {Ngrok_URL} from "@env";
+import { Ngrok_URL } from "@env";
 import Header from '../components/Header';
 import Navbar from '../components/Navbar';
 
@@ -28,6 +28,7 @@ export default function RestaurantScreen({ navigation }) {
   };
 
 
+  // GET all restaurants and storing in restaurants
   useEffect(() => {
     const getRestaurants = async () => {
       try {
@@ -103,7 +104,7 @@ export default function RestaurantScreen({ navigation }) {
                 <Picker
                   style={styles.picker}
                   selectedValue={selectedRating}
-                  onValueChange={(itemValue, itemIndex) => setSelectedRating(itemValue)}
+                  onValueChange={(itemValue) => setSelectedRating(itemValue)}
                 >
                   <Picker.Item label="--Select--" value="" />
                   <Picker.Item label="★☆☆☆☆" value="1" />
@@ -120,7 +121,7 @@ export default function RestaurantScreen({ navigation }) {
                 <Picker
                   style={styles.picker}
                   selectedValue={selectedPrice}
-                  onValueChange={(itemValue, itemIndex) => setSelectedPrice(itemValue)}
+                  onValueChange={(itemValue) => setSelectedPrice(itemValue)}
                 >
                   <Picker.Item label="--Select--" value="" />
                   <Picker.Item label="$" value="1" />

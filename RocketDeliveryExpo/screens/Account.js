@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import Header from '../components/Header';
 import Navbar from '../components/Navbar';
-
-
-import {Ngrok_URL} from "@env";
+import { Ngrok_URL } from "@env";
 
 
 export default function AccountScreen({ navigation }) {
@@ -20,8 +18,6 @@ export default function AccountScreen({ navigation }) {
 
   const getInfo = async (id, type) => {
     try {
-      console.log(`ID: ${id}`)
-      console.log(`Type: ${type}`)
       const response = await axios.get(`${Ngrok_URL}/api/account/${id}?type=${type}`, {
         headers: {
           Accept: "application/json"
@@ -37,26 +33,18 @@ export default function AccountScreen({ navigation }) {
     }
   };
 
+  // Checking if logged in as customer our courier
   useFocusEffect(
     React.useCallback(() => {
-    const getCustomerIDOrCourierID = async () => {
-      const loggedInType = await AsyncStorage.getItem("loggedInType");
-      if (loggedInType === "Customer") {
-        const id = await AsyncStorage.getItem("customerID");
-        setID(parseInt(id))
-        getInfo(parseInt(id), "Customer");
-      }
-      if (loggedInType === "Courier") {
-        const id = await AsyncStorage.getItem("courierID");
-        setID(parseInt(id))
-        getInfo(parseInt(id), "Courier");
-      }
-      setCustomerType(loggedInType);
-    };
-
-    
-  
-    getCustomerIDOrCourierID();
+      const getCustomerIdOrCourierID = async () => {
+        const loggedInType = await AsyncStorage.getItem("loggedInType");
+        const idKey = loggedInType === "Customer" ? "customerID" : "courierID";
+        const id = await AsyncStorage.getItem(idKey);
+        setID(parseInt(id));
+        getInfo(parseInt(id), loggedInType);
+        setCustomerType(loggedInType);
+      };
+      getCustomerIdOrCourierID();
     }, [])
   );
 

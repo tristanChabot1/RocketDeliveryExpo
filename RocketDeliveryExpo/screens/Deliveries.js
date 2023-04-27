@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Modal, Dimensions, Button } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Modal, Dimensions } from 'react-native';
 import axios from 'axios';
-import {Ngrok_URL} from "@env";
+import { Ngrok_URL } from "@env";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Header from '../components/Header';
 import Navbar from '../components/Navbar';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faMagnifyingGlassPlus } from '@fortawesome/free-solid-svg-icons/faMagnifyingGlassPlus';
-import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark';
+import { faMagnifyingGlassPlus, faXmark } from '@fortawesome/free-solid-svg-icons';
 
 
 export default function DeliveriesScreen({ navigation }) {
@@ -37,6 +36,7 @@ export default function DeliveriesScreen({ navigation }) {
     });
   };
 
+  // Updating the status on click
   const handleStatus = async (id, status) => {
     let newStatus;
     if (status === "pending") {
@@ -64,6 +64,7 @@ export default function DeliveriesScreen({ navigation }) {
     }
   };
 
+  // GET all orders for given courier
   useEffect(() => {
     const getOrderHistory = async () => {
       const courierID = parseInt(await AsyncStorage.getItem('courierID'))

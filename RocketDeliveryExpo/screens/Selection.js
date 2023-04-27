@@ -1,10 +1,8 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Image, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faUser } from '@fortawesome/free-solid-svg-icons/faUser';
-import { faCar } from '@fortawesome/free-solid-svg-icons/faCar';
-
+import { faUser, faCar } from '@fortawesome/free-solid-svg-icons';
 
 export default function SelectionScreen({ navigation, route }) {
 
