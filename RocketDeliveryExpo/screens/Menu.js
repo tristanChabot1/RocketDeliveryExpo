@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity, Modal, Button, Dimensions } from 'react-native';
 import Checkbox from 'expo-checkbox';
 import axios from 'axios';
-import {Ngrok_URL} from "@env";
+import { Ngrok_URL, CLIENT_ID, SECRET_KEY } from "@env";
 import Header from '../components/Header';
 import Navbar from '../components/Navbar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -104,10 +104,49 @@ export default function MenuScreen({ navigation, route }) {
   const sendSms = async (name, id) => {
     const url = `${Ngrok_URL}/api/sms/send_message`;
     const body = {
-      to: '5817454593',
+      to: '5817454593', // this is the receiving phone number
       message: `Thank you ${name}! Your order id is: ${id}.`,
     };
     const response = await axios.post(url, body);
+    console.log(response.data);
+  };
+
+  const sendEmail = async (name, orderID, restaurantName, totalCost) => {
+    const url = "https://api.notify.eu/notification/send";
+    const body = {
+      message: {
+        notificationType: "order_confirmation",
+        language: "en",
+        params: {
+          name: name,
+          orderID: orderID,
+          restaurantName: restaurantName,
+          totalCost: totalCost
+        },
+        transport: [
+          {
+            type: "order_confirmation",
+            from: {
+              name: "Rocket F.",
+              email: "R0ck3tF00d@outlook.com"
+            },
+            recipients: {
+              to: [
+                {
+                  "name": "tristanchabot10@gmail.com", // Here would be the customer email
+                  "recipient": "tristanchabot10@gmail.com" // Here would be the customer email
+                }
+              ]
+            }
+          }
+        ]
+      }
+    };
+    const headers = {
+      "X-ClientId": CLIENT_ID,
+      "X-SecretKey": SECRET_KEY,
+    };
+    const response = await axios.post(url, body, { headers });
     console.log(response.data);
   };
 
@@ -159,6 +198,10 @@ export default function MenuScreen({ navigation, route }) {
       
       if (phoneIsChecked) {
         sendSms(data.customer_name, data.order_id)
+      }
+
+      if (emailIsChecked) {
+        sendEmail(data.customer_name, data.order_id, data.restaurant_name, orderTotal)
       }
 
     })
