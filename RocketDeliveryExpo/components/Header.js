@@ -3,6 +3,8 @@ import { StyleSheet, Text, View, TouchableOpacity, Image, StatusBar } from 'reac
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Header({ navigation }) {
+
+  // Checking if already logged in
   useEffect(() => {
     const checkLoginState = async () => {
       const isLoggedIn = await AsyncStorage.getItem('isLoggedIn');
@@ -17,7 +19,6 @@ export default function Header({ navigation }) {
 
   const handleLogout = async () => {
     await AsyncStorage.removeItem('isLoggedIn');
-    await AsyncStorage.removeItem('customerID');
     if (navigation) {
       navigation.navigate('Login');
     }

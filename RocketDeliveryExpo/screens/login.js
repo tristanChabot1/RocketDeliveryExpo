@@ -16,8 +16,10 @@ export default function LoginScreen({ navigation }) {
     React.useCallback(() => {
     const checkLoginState = async () => {
     const isLoggedIn = await AsyncStorage.getItem('isLoggedIn');
+    const customerID = parseInt(await AsyncStorage.getItem('customerID'))
+    const courierID = parseInt(await AsyncStorage.getItem('courierID'))
     if (isLoggedIn) {
-    navigation.replace('Restaurant');
+    navigation.navigate('Selection', {customerID: customerID, courierID: courierID});
     }
     };
     checkLoginState();
@@ -32,12 +34,24 @@ export default function LoginScreen({ navigation }) {
         { headers: { 'Content-Type': 'application/json',
       'Accept': 'application/json' } }
       );
-  
+      console.log(response)
       if (response.data.success) {
         setShow(false);
         await AsyncStorage.setItem('isLoggedIn', 'true');
         await AsyncStorage.setItem('customerID', `${response.data.customer_id}`);
-        navigation.navigate('Restaurant');
+        await AsyncStorage.setItem('courierID', `${response.data.courier_id}`);
+        const customerID = parseInt(await AsyncStorage.getItem('customerID'));
+        const courierID = parseInt(await AsyncStorage.getItem('courierID'));
+        if (!isNaN(customerID) && !isNaN(courierID)) {
+          navigation.navigate('Selection', {customerID: customerID, courierID: courierID});
+        }
+        else if (!isNaN(customerID) && isNaN(courierID)) {
+          navigation.navigate('Restaurant');
+        }
+        else if (isNaN(customerID) && !isNaN(courierID)) {
+          navigation.navigate('CourierHome');
+        }
+        
       } else {
         setShow(true);
       }

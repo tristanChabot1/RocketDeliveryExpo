@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity, Modal, Button, Dimensions } from 'react-native';
+import Checkbox from 'expo-checkbox';
 import axios from 'axios';
-import {Ngrok_URL} from "@env";
+import { Ngrok_URL, CLIENT_ID, SECRET_KEY } from "@env";
 import Header from '../components/Header';
 import Navbar from '../components/Navbar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faCirclePlus } from '@fortawesome/free-solid-svg-icons/faCirclePlus';
-import { faCircleMinus } from '@fortawesome/free-solid-svg-icons/faCircleMinus';
-import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark';
-import { faCircleCheck } from '@fortawesome/free-solid-svg-icons/faCircleCheck';
-import { faCircleXmark } from '@fortawesome/free-solid-svg-icons/faCircleXmark';
+import { faCirclePlus, faCircleMinus, faXmark, faCircleCheck, faCircleXmark } from '@fortawesome/free-solid-svg-icons';
 
 
 
@@ -23,19 +20,20 @@ export default function MenuScreen({ navigation, route }) {
   const [products, setProducts] = useState([]);
   const [orderStatusText, setOrderStatusText] = useState("CONFIRM ORDER");
   const [orderStatus, setOrderStatus] = useState("undefined");
+  const [emailIsChecked, setEmailChecked] = useState(false);
+  const [phoneIsChecked, setPhoneChecked] = useState(false);
 
   const { height } = Dimensions.get('window');
   const modalTopMeasure = height/2 - 150
 
-
+  // GET all products of restaurant
   useEffect(() => {
     const getRestaurants = async () => {
       try {
         const response = await axios.get(`${Ngrok_URL}/api/products?restaurant=${restaurant.id}`);
+        console.log(response)
         if (response.status === 200) {
           setProducts(response.data.map(product => ({ ...product, quantity: 0 })));
-        } else {
-          // manage case
         }
       } catch (error) {
         console.log(error);
@@ -45,6 +43,7 @@ export default function MenuScreen({ navigation, route }) {
     getRestaurants();
   }, []);
 
+  // checks if there are no products added
   useEffect(() => {
     let flag = true;
     products.forEach(product => {
@@ -98,10 +97,59 @@ export default function MenuScreen({ navigation, route }) {
     });
   };
 
+  const sendSms = async (name, id) => {
+    const url = `${Ngrok_URL}/api/sms/send_message`;
+    const body = {
+      to: '5817454593', // this is the receiving phone number
+      message: `Thank you ${name}! Your order id is: ${id}.`,
+    };
+    await axios.post(url, body);
+  };
+
+  const sendEmail = async (name, orderID, restaurantName, totalCost) => {
+    const url = "https://api.notify.eu/notification/send";
+    const body = {
+      message: {
+        notificationType: "order_confirmation", // this is my template's notification's type
+        language: "en",
+        params: {
+          name: name,
+          orderID: orderID,
+          restaurantName: restaurantName,
+          totalCost: totalCost
+        },
+        transport: [
+          {
+            type: "order_confirmation", // this is the channel
+            from: {
+              name: "Rocket F.",
+              email: "R0ck3tF00d@outlook.com"
+            },
+            recipients: {
+              to: [
+                {
+                  "name": "tristanchabot10@gmail.com", // Here would be the customer email
+                  "recipient": "tristanchabot10@gmail.com" // Here would be the customer email
+                }
+              ]
+            }
+          }
+        ]
+      }
+    };
+    const headers = {
+      "X-ClientId": CLIENT_ID,
+      "X-SecretKey": SECRET_KEY,
+    };
+    await axios.post(url, body, { headers });
+  };
+
+
   const handlePostOrder = async () => {
     setOrderStatusText("PROCESSING ORDER...");
     const productOrders = [];
 
+    // create the array of products
     Object.keys(orderSummary).forEach((productName) => {
       const product = products.find((p) => p.name === productName);
       if (orderSummary[productName].quantity > 0 && product) {
@@ -123,7 +171,7 @@ export default function MenuScreen({ navigation, route }) {
       }
     };
     
-    fetch('https://1fdb-142-182-79-148.ngrok-free.app/api/orders', {
+    fetch(`${Ngrok_URL}/api/orders`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -141,8 +189,19 @@ export default function MenuScreen({ navigation, route }) {
         setOrderStatusText("CONFIRM ORDER");
       }, 2000);
       setOrderStatus("success");
+      
+      if (phoneIsChecked) {
+        sendSms(data.customer_name, data.order_id)
+      }
+
+      if (emailIsChecked) {
+        sendEmail(data.customer_name, data.order_id, data.restaurant_name, orderTotal)
+      }
+
     })
     .catch(error => {
+      console.log(error);
+      setOrderStatusText("CONFIRM ORDER");
       setOrderStatus("error");
     });
   }
@@ -195,7 +254,7 @@ export default function MenuScreen({ navigation, route }) {
                   <Text style={{fontWeight: "bold"}}>Order Summary</Text>
                   {Object.keys(orderSummary).map((productName, index) => (
                     <View key={index} style={styles.singleOrderContainer}>
-                      <Text style={{width: "55%"}}>{productName}</Text>
+                      <Text style={{width: "55%"}}>{productName} {orderSummary[productName].cost}</Text>
                       <Text style={{width: "20%", marginRight: "auto"}}>{`x${orderSummary[productName].quantity}`}</Text>
                       <Text>{`$ ${orderSummary[productName].cost}`}</Text>
                     </View>
@@ -206,7 +265,20 @@ export default function MenuScreen({ navigation, route }) {
                   <Text>{`: $ ${orderTotal}`}</Text>
                 </View>
                 <View style={[styles.confirmOrderButton, {display: handleMessageConfirmationDisplay("button")}]}>
-                  <Button title={orderStatusText} color={"#DA583B"} onPress={handlePostOrder} />
+                  <View>
+                    <Text style={{textAlign: "center", marginBottom: 10}}>Would you like to receive your order confirmation by email and/or text?</Text>
+                    <View style={styles.checkContainer}>
+                      <View style={styles.singleCheckContainer}>
+                        <Checkbox style={styles.checkbox} value={emailIsChecked} onValueChange={setEmailChecked} />
+                        <Text style={{marginLeft: 5}}>By Email</Text>
+                      </View>
+                      <View style={styles.singleCheckContainer}>
+                        <Checkbox style={styles.checkbox} value={phoneIsChecked} onValueChange={setPhoneChecked} />
+                        <Text style={{marginLeft: 5}}>By Phone</Text>
+                      </View>
+                    </View>
+                  </View>
+                  <Button title={orderStatusText} disabled={orderStatusText === "CONFIRM ORDER" ? false : true} color={"#DA583B"} onPress={handlePostOrder} />
                 </View>
                 <View style={[styles.successContainer, {display: handleMessageConfirmationDisplay("success")}]}>
                   <FontAwesomeIcon icon={faCircleCheck} size={30} style={{color: "#1abc35",}} />
@@ -388,6 +460,14 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     marginTop: 10,
     marginHorizontal: 20,
+  },
+  checkContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginBottom: 15,
+  },
+  singleCheckContainer: {
+    flexDirection: "row"
   },
   confirmOrderButton: {
     marginHorizontal: 20,
