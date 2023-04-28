@@ -31,6 +31,7 @@ export default function MenuScreen({ navigation, route }) {
     const getRestaurants = async () => {
       try {
         const response = await axios.get(`${Ngrok_URL}/api/products?restaurant=${restaurant.id}`);
+        console.log(response)
         if (response.status === 200) {
           setProducts(response.data.map(product => ({ ...product, quantity: 0 })));
         }

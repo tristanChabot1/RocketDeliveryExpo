@@ -34,7 +34,7 @@ export default function LoginScreen({ navigation }) {
         { headers: { 'Content-Type': 'application/json',
       'Accept': 'application/json' } }
       );
-  
+      console.log(response)
       if (response.data.success) {
         setShow(false);
         await AsyncStorage.setItem('isLoggedIn', 'true');

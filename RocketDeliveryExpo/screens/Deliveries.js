@@ -70,6 +70,7 @@ export default function DeliveriesScreen({ navigation }) {
       const courierID = parseInt(await AsyncStorage.getItem('courierID'))
       try {
         const response = await axios.get(`${Ngrok_URL}/api/orders?type=courier&id=${courierID}`);
+        console.log(response)
         if (response) {
           const modifiedData = response.data.map(order => {
             const customerAddress = order.customer_address.split(',')[0].trim();

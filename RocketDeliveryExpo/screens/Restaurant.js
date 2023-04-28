@@ -37,6 +37,7 @@ export default function RestaurantScreen({ navigation }) {
             Accept: "application/json"
           }
         });
+        console.log(response)
         if (response.status === 200) {
           const restaurants = response.data.map(({ id, address_id, active, email, name, phone, price_range, user_id, rating_average }, index) => {
             return {

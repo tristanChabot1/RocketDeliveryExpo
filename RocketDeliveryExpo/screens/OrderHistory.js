@@ -42,6 +42,7 @@ export default function OrderHistoryScreen({ navigation }) {
       const customerID = parseInt(await AsyncStorage.getItem('customerID'))
       try {
         const response = await axios.get(`${Ngrok_URL}/api/orders?type=customer&id=${customerID}`);
+        console.log(response)
         if (response) {
           setOrders(response.data);
         }

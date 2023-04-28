@@ -14,7 +14,8 @@ export default function AccountScreen({ navigation }) {
   const [primaryEmail, setPrimaryEmail] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [show, setShow] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const getInfo = async (id, type) => {
     try {
@@ -23,6 +24,7 @@ export default function AccountScreen({ navigation }) {
           Accept: "application/json"
         }
       });
+      console.log(response)
       if (response.status === 200) {
         setEmail(response.data.email || "undefined");
         setPhone(response.data.phone || "undefined");
@@ -61,12 +63,15 @@ export default function AccountScreen({ navigation }) {
       );
   
       if (response.status === 200) {
-        setShow(false);
+        setShowError(false);
+        setShowSuccess(true);
       } else {
-        setShow(true);
+        setShowError(true);
+        setShowSuccess(false);
       }
     } catch (error) {
-      setShow(true);
+      setShowError(true);
+      setShowSuccess(false);
     }
   };
 
@@ -101,7 +106,8 @@ export default function AccountScreen({ navigation }) {
             value={phone}
           />
           <Text style={styles.smallText}>Phone number for you Customer account.</Text>
-          <Text style={[styles.errorMessage, { display: show ? "flex" : "none" }]}>Update failed. Try again!</Text>
+          <Text style={[styles.errorMessage, { display: showError ? "flex" : "none" }]}>Update failed. Try again!</Text>
+          <Text style={[styles.successMessage, { display: showSuccess ? "flex" : "none" }]}>Update successfull!</Text>
           <TouchableOpacity style={styles.button} onPress={handleUpdate}>
             <Text style={styles.buttonText}>UPDATE ACCOUNT</Text>
           </TouchableOpacity>
@@ -162,6 +168,10 @@ const styles = StyleSheet.create({
   },
   errorMessage: {
     color: "red",
+    textAlign: "center",
+  },
+  successMessage: {
+    color: "green",
     textAlign: "center",
   },
 });
